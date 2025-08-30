@@ -392,7 +392,7 @@
 
 						$null_value = $GLOBALS['null_value'];
                         $columns = array('created_date_time', 'creator', 'creator_name','bill_company_id', 'category_id', 'name', 'lower_case_name', 'type', 'description', 'cover_image', 'mobile_cover_image', 'category_status', 'meta_title', 'meta_keywords', 'meta_description', 'ordering', 'deleted','category_url');
-                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$null_value."'", "'".$name."'", "'".$lower_case_name."'", "'".$type."'", "'".$description."'", "'".$category_cover_image.'.webp'."'", "'".$category_mobile_cover_image."'", "'1'", "'".$meta_title."'", "'".$meta_keywords."'", "'".$meta_description."'", "'".$ordering_number."'", "'0'","'".$url."'");
+                        $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'","'".$bill_company_id."'", "'".$null_value."'", "'".$name."'", "'".$lower_case_name."'", "'".$type."'", "'".$description."'", "'".$category_cover_image.$GLOBALS['image_format']."'", "'".$category_mobile_cover_image."'", "'1'", "'".$meta_title."'", "'".$meta_keywords."'", "'".$meta_description."'", "'".$ordering_number."'", "'0'","'".$url."'");
                         $category_insert_id = $obj->InsertSQL($GLOBALS['category_table'], $columns, $values,'category_id','', $action);						
 						if(preg_match("/^\d+$/", $category_insert_id)) {
                             $image_copy = 1;
@@ -418,7 +418,7 @@
 						
 							$columns = array(); $values = array();						
 							$columns = array('creator_name', 'name', 'lower_case_name', 'type', 'description', 'cover_image', 'mobile_cover_image', 'meta_title', 'meta_keywords', 'meta_description','category_url');
-							$values = array("'".$creator_name."'", "'".$name."'", "'".$lower_case_name."'", "'".$type."'", "'".$description."'", "'".$category_cover_image.'.webp'."'", "'".$category_mobile_cover_image."'", "'".$meta_title."'", "'".$meta_keywords."'", "'".$meta_description."'","'".$url."'");
+							$values = array("'".$creator_name."'", "'".$name."'", "'".$lower_case_name."'", "'".$type."'", "'".$description."'", "'".$category_cover_image.$GLOBALS['image_format']."'", "'".$category_mobile_cover_image."'", "'".$meta_title."'", "'".$meta_keywords."'", "'".$meta_description."'","'".$url."'");
 							$category_update_id = $obj->UpdateSQL($GLOBALS['category_table'], $getUniqueID, $columns, $values, $action);
 							if(preg_match("/^\d+$/", $category_update_id)) {
 								$image_copy = 1;								
@@ -444,7 +444,7 @@
 									unlink($target_dir.$prev_category_cover_image);
 								}
 							}
-							copy($temp_dir.$category_cover_image, $target_dir.$category_cover_image.'.webp');
+							copy($temp_dir.$category_cover_image, $target_dir.$category_cover_image.$GLOBALS['image_format']);
 						}
 						else {
 							if($category_cover_image == $GLOBALS['null_value']) {
@@ -461,7 +461,7 @@
 									unlink($target_dir.$prev_category_mobile_cover_image);
 								}
 							}
-							copy($temp_dir.$category_mobile_cover_image, $target_dir.$category_mobile_cover_image.'.webp');
+							copy($temp_dir.$category_mobile_cover_image, $target_dir.$category_mobile_cover_image.$GLOBALS['image_format']);
 						}
 						else {
 							if($category_mobile_cover_image == $GLOBALS['null_value']) {

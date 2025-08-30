@@ -41,28 +41,71 @@ district_index[36]="Almora|Bageshwar|Chamoli|Champawat|Dehradun|Haridwar|Nainita
 district_index[37]="Alipurduar|Bankura|Birbhum|Cooch Behar|Dakshin Dinajpur|Darjeeling|Hooghly|Howrah|Jalpaiguri|Jhargram|Kalimpong|Kolkata|Malda|Murshidabad|Nadia|North 24 Parganas|Paschim Bardhaman|Paschim Medinipur|Purba Bardhaman|Purba Medinipur|Purulia|South 24 Parganas|Uttar Dinajpur";
 
 
-function getDistricts(form_name, district, city) {
-	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="district"]').length > 0) {
-		var selectedStateIndex = document.forms[form_name+"_form"]["state"].selectedIndex;
-		var state = district_state_arr[selectedStateIndex - 1];
-		var selected_state = document.forms[form_name+"_form"]["state"].value;
-		var districtsElement = document.forms[form_name+"_form"]["district"];
+// function getDistricts(form_name, district, city) {
+// 	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="district"]').length > 0) {
+// 		var selectedStateIndex = document.forms[form_name+"_form"]["state"].selectedIndex;
+// 		var state = district_state_arr[selectedStateIndex - 1];
+// 		var selected_state = document.forms[form_name+"_form"]["state"].value;
+// 		var districtsElement = document.forms[form_name+"_form"]["district"];
 		
+// 		districtsElement.length = 0;
+// 		districtsElement.options[0] = new Option('Select', '');
+// 		districtsElement.selectedIndex = 0;
+// 		if (state == selected_state) {
+// 			var district_arr = district_index[selectedStateIndex].split("|");
+// 			for (var i = 0; i < district_arr.length; i++) {
+// 				districtsElement.options[districtsElement.length] = new Option(district_arr[i], district_arr[i]);
+// 				if (district_arr[i] == district) {
+// 					districtsElement.selectedIndex = parseInt(i) + 1;
+// 				}
+// 			}
+//             getCities(form_name,district, city);
+// 			districtsElement.onchange = function () {
+// 				getCities(form_name,district, city);
+// 			};
+// 		}
+// 	}
+// }
+
+function getDistricts(form_name, district, city, context) {
+	// Scope the search (modal or whole page)
+	let formScope = context
+		? $(context).find('form[name="' + form_name + '_form"]')
+		: $('form[name="' + form_name + '_form"]');
+
+	let stateElement = formScope.find('select[name="state"]')[0];
+	let districtsElement = formScope.find('select[name="district"]')[0];
+
+	if (stateElement && districtsElement) {
+		let selectedStateIndex = stateElement.selectedIndex;
+		let selected_state = stateElement.value;
+
+		// Reset district dropdown
 		districtsElement.length = 0;
 		districtsElement.options[0] = new Option('Select', '');
 		districtsElement.selectedIndex = 0;
-		if (state == selected_state) {
-			var district_arr = district_index[selectedStateIndex].split("|");
-			for (var i = 0; i < district_arr.length; i++) {
-				districtsElement.options[districtsElement.length] = new Option(district_arr[i], district_arr[i]);
-				if (district_arr[i] == district) {
-					districtsElement.selectedIndex = parseInt(i) + 1;
+
+		if (selectedStateIndex > 0) {
+			let state = district_state_arr[selectedStateIndex - 1];
+
+			if (state === selected_state) {
+				let district_arr = district_index[selectedStateIndex].split("|");
+
+				for (let i = 0; i < district_arr.length; i++) {
+					districtsElement.options[districtsElement.length] = new Option(district_arr[i], district_arr[i]);
+					if (district_arr[i] === district) {
+						districtsElement.selectedIndex = i + 1;
+					}
 				}
+
+				// Load cities
+				getCities(form_name, district, city, context);
+
+				// On change event
+				districtsElement.onchange = function () {
+					getCities(form_name, district, city, context);
+				};
 			}
-            getCities(form_name,district, city);
-			districtsElement.onchange = function () {
-				getCities(form_name,district, city);
-			};
 		}
 	}
 }

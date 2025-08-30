@@ -118,6 +118,67 @@
 			$list = $process_obj->DisplayCategoryByOrder($parent_category_id);
 			return $list;
 		}		
+        public function getCategoryWithNoSubCategory() {
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+
+			$list = array();
+			$list = $process_obj->getCategoryWithNoSubCategory();
+			return $list;
+		}		
+		public function getPrevCombinationId($product_id)
+		{
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$list = array();
+			$list = $process_obj->getPrevCombinationId($product_id);
+			return $list;
+		}						
+		public function ProductVarietyUpdate($bill_company_id,$product_id,$category_id,$attribute_id,$attribute_id_value)
+		{
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$list = array();
+			$list = $process_obj->ProductVarietyUpdate($bill_company_id,$product_id,$category_id,$attribute_id,$attribute_id_value);
+			return $list;
+		}		
+		public function previous_variety_attributes($product_id,$category_id){
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$result = "";
+			$result = $process_obj->previous_variety_attributes($product_id,$category_id);
+			return $result;
+		}		
+		public function getCombinationId($product_id,$attribute_id,$attribute_value_id,$quantity) 
+		{
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$list = array();
+			$list = $process_obj->getCombinationId($product_id,$attribute_id,$attribute_value_id,$quantity);
+			return $list;
+		}		
+		public function getProductList($category_filter, $filter_product_type) {
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$result = "";
+			$result = $process_obj->getProductList($category_filter,$filter_product_type);
+			return $result;
+		}		
+		public function getProductCombinationCount($product_id)
+		{
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$list = array();
+			$list = $process_obj->getProductCombinationCount($product_id);
+			return $list;
+		}		
+		public function getAttributeQuantity($product_id,$attribute_value_id,$quantity,$type) {
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$list = array();
+			$list = $process_obj->getAttributeQuantity($product_id,$attribute_value_id,$quantity,$type);
+			return $list;
+		}		
 		public function creation_function_object() {
 			$create_obj = "";		
 			$create_obj = new Creation_functions();
@@ -156,6 +217,53 @@
 			$list = $create_obj->getAttrValueRecords($bill_company_id, $category_id, $subcategory_id);
 			return $list;
 		}
+		public function getOtherCityList($district) {
+			$list = array();
+			$list = parent::getOtherCityList($district);
+			return $list;
+		}
 
+		public function customerMobileExists($mobile_number) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->customerMobileExists($mobile_number);
+			return $result;
+		}
+
+		public function FilterCustomerList($type) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$result = "";
+			$result = $create_obj->FilterCustomerList($type);
+			return $result;
+		}
+
+		public function CheckUserIDAlreadyExists($user_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->CheckUserIDAlreadyExists($user_id);
+			return $list;
+		}
+		public function CheckUserNoAlreadyExists($mobile_number) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->CheckUserNoAlreadyExists($mobile_number);
+			return $list;
+		}
+
+		public function getUserList() {
+			$list = array();
+			$list = parent::getUserList();
+			return $list;
+		}
+
+		public function CompanyCount() {
+			$list = 0;
+			$list = parent::CompanyCount();
+			return $list;
+		}		
 	}
 ?>

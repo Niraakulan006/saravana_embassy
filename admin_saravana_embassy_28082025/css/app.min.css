@@ -4615,13 +4615,13 @@ img) {
   --vz-btn-active-border-color:transparent
 }
 .btn-danger {
-  --vz-btn-bg:#0e74bb;
-  --vz-btn-border-color:#0e74bb;
-  --vz-btn-hover-bg:#0e74bb;
-  --vz-btn-hover-border-color:#0e74bb;
-  --vz-btn-focus-shadow-rgb:#0e74bb;
-  --vz-btn-active-bg:#0e74bb;
-  --vz-btn-active-border-color:#0e74bb;
+  --vz-btn-bg:#f06548;
+  --vz-btn-border-color:#f06548;
+  --vz-btn-hover-bg:#f06548;
+  --vz-btn-hover-border-color:#f06548;
+  --vz-btn-focus-shadow-rgb:#f06548;
+  --vz-btn-active-bg:#f06548;
+  --vz-btn-active-border-color:#f06548;
 }
 .btn-outline-danger {
   --vz-btn-color:var(--vz-danger);

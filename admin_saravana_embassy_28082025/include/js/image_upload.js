@@ -96,6 +96,17 @@ jQuery(document).ready(function() {
 			}
 		});	
 	}
+	if(jQuery('#multiple_image').length > 0) {
+		jQuery('#multiple_image').change(function(event) {
+			if(jQuery('#multiple_image_cover').find('.alert').length > 0) {
+				jQuery('#multiple_image_cover').find('.alert').remove();
+			}
+			var count = jQuery(this).get(0).files.length;
+			if(count != 0) {
+				multiple_upload_files(this, 'multiple_image', '0');
+			}
+		});	
+	}	
 	if(jQuery('#product_main_image').length > 0) {
 		jQuery('#product_main_image').change(function(event) {
 			if(jQuery('#product_main_image_cover').find('.alert').length > 0) {
@@ -172,41 +183,6 @@ jQuery(document).ready(function() {
 			}
 		});	
 	}
-	if(jQuery('#home_thumbnails_image').length > 0) {
-		jQuery('#home_thumbnails_image').change(function(event) {
-			if(jQuery('#home_thumbnails_image_cover').find('.alert').length > 0) {
-				jQuery('#home_thumbnails_image_cover').find('.alert').remove();
-			}
-			var count = jQuery(this).get(0).files.length;
-			if(count != 0) {
-				upload_files(this, 'home_thumbnails_image');
-			}
-		});	
-	}
-
-	if(jQuery('#home_products_thumb_image').length > 0) {
-		jQuery('#home_products_thumb_image').change(function(event) {
-			if(jQuery('#home_products_thumb_image_cover').find('.alert').length > 0) {
-				jQuery('#home_products_thumb_image_cover').find('.alert').remove();
-			}
-			var count = jQuery(this).get(0).files.length;
-			if(count != 0) {
-				upload_files(this, 'home_products_thumb_image');
-			}
-		});	
-	}
-
-	if(jQuery('#order_delivery_image').length > 0) {
-		jQuery('#order_delivery_image').change(function(event) {
-			if(jQuery('#order_delivery_image_cover').find('.alert').length > 0) {
-				jQuery('#logo_cover').find('.alert').remove();
-			}
-			var count = jQuery(this).get(0).files.length;
-			if(count != 0) {
-				upload_files(this, 'order_delivery_image', '0');
-			}
-		});	
-	}
 });
 
 function upload_multiple_files(form_data, field, index) {
@@ -226,7 +202,7 @@ function upload_multiple_files(form_data, field, index) {
 						image.src = event.target.result;
 						image.onload = function() {
 							if(field == "desktop_home_banner") {
-								if(this.width == 1920 && this.height == 700) {
+								if(this.width == 1500 && this.height == 500) {
 									var image_url = event.target.result;
 									var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});							
 									request.done(function(result) {
@@ -237,7 +213,6 @@ function upload_multiple_files(form_data, field, index) {
 											index = parseInt(index) + 1;
 											upload_multiple_files(form_data, field, index);
 										}, 1000);
-
 									});
 								}
 								else {
@@ -252,14 +227,13 @@ function upload_multiple_files(form_data, field, index) {
 									var image_url = event.target.result;
 									var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});							
 									request.done(function(result) {
-										var banner_div_id = '<div class="col-sm-6"><div id="banner_div" class="form-group w-100 px-3 py-3">'+result+'</div></div>';
+										var banner_div_id = '<div class="col-sm-4"><div id="banner_div" class="form-group w-100 px-3 py-3">'+result+'</div></div>';
 										jQuery('.mobile_home_banner_cover').append(banner_div_id);
 
 										setTimeout( function(){ 
 											index = parseInt(index) + 1;
 											upload_multiple_files(form_data, field, index);
 										}, 1000);
-
 									});
 								}
 								else {
@@ -293,10 +267,106 @@ function upload_multiple_files(form_data, field, index) {
 							}
 						}
 					});
+				}else {
+					if(jQuery('div.alert').length > 0) {
+						jQuery('div.alert').remove();
+					}
+					jQuery('#'+field+'_cover .cover').before('<div class="alert alert-danger w-100 text-center">Upload image given required size</div>');
 				}
+			}
+			else {
+				if(jQuery('div.alert').length > 0) {
+					jQuery('div.alert').remove();
+				}
+				jQuery('#'+field+'_cover .cover').before('<div class="alert alert-danger w-100 text-center">Invalid Image Format</div>');
 			}
 		}
     }
+}
+
+function multiple_upload_files(obj, field, cropper) {
+	if(jQuery('div.alert').length > 0) {
+		jQuery('div.alert').remove();
+	}
+	// alert(obj)
+
+	var fileName = jQuery(obj).get(0).files[0];	
+	// alert(fileName);
+	var image_type = fileName.type;
+
+	var idxDot = fileName.name.lastIndexOf(".") + 1;
+	var extFile = fileName.name.substr(idxDot, fileName.name.length).toLowerCase();
+	if(extFile=="jpg" || extFile=="jpeg" || extFile=="png") {
+		var image_size = fileName.size;
+		if(image_size < 2000000) {
+			var width = ""; var height = "";		
+			var reader = new FileReader();				
+			reader.readAsDataURL(fileName);					
+			reader.onload = function(event) {
+				var image = new Image();
+				image.src = event.target.result;
+				image.onload = function() {
+					if(cropper == 1) {
+						jQuery("#"+field+"_preview").fadeIn("fast").attr('src',event.target.result);
+						width = this.width;
+						height = this.height;
+						start(field, width, height, image_type);
+					}
+					else {
+						// var width = 600; var height = 340;
+						// /*if(field == "home_banner") { width = 1500; height = 500; }
+						// else { */
+						var image_count = 0;
+						image_count = jQuery('#'+field+'_view').find('.'+field+'_div').length;
+						// alert(image_count);
+						 width = this.width; height = this.height; 
+						// alert("width:"+width+" height:"+height);
+						if(parseInt(image_count) <= 5) {
+
+							if(this.width == 800 && this.height == 800) {
+								jQuery("#"+field+"_view").fadeIn("fast").attr('src',event.target.result);
+								var image_url = event.target.result;
+								var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});			
+
+								request.done(function(result) {
+									// alert(result);
+									var banner_div_id = '<div class="'+field+'_div"><div class="form-group w-100 px-3 py-3 cover">'+result+'</div></div>';                                 
+									jQuery('#'+field+'_view').append(banner_div_id);
+								});
+							}
+							else {
+								if(jQuery('div.alert').length > 0) {
+									jQuery('div.alert').remove();
+								}
+							
+								jQuery('#'+field+'_view').before('<div class="alert alert-danger w-100 text-center"> Image size should be 800 x 800 size</div>');
+							}
+						}
+						else {
+							if(jQuery('div.alert').length > 0) {
+								jQuery('div.alert').remove();
+							}
+							jQuery('#'+field+'_view').before('<div class="alert alert-danger w-100 text-center">Maximum image upload count was 6</div>');
+						}
+						
+					}
+				}
+			}
+		}
+		else {
+			if(jQuery('div.alert').length > 0) {
+				jQuery('div.alert').remove();
+			}
+			jQuery('#'+field+'_view').before('<div class="alert alert-danger w-100 text-center">Image size is greater than 2MB</div>');
+		}
+		
+	}
+	else {
+		if(jQuery('div.alert').length > 0) {
+			jQuery('div.alert').remove();
+		}
+		jQuery('#'+field+'_cover .cover').before('<div class="alert alert-danger w-100 text-center">Please upload only jpg, jpeg or png Image  or PDF or Excel</div>');
+	}
 }
 
 function upload_files(obj, field) {

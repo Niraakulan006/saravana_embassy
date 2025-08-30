@@ -11,23 +11,24 @@
 		}
 
 		public function common_validation($field_value, $field_name, $field_type) {
-			$result = "";
-			$field_value = trim($field_value);
-			if(!empty($field_value)) {
-				if(preg_match("/[\"\'\>\<]/", $field_value)) {
-					$result = "(&lsquo; &ldquo; > <) not allowed";
-				}
-			}
-			else {
-				if($field_type == "select") {
-					$result = "Select the ".$field_name;
-				}
-				else {
-					$result = "Enter the ".$field_name;
-				}
-			}
-			return $result;
-		}
+            $result = "";
+            $field_value = trim($field_value);
+            if(!empty($field_value)) {
+                if(preg_match("/^[?!\"\'\>\<$@#\^&\*\(\)]+$/", $field_value)) {
+                    $result = "(&lsquo; &ldquo; > < and special characters alone) not allowed";
+                }
+            }
+            else {
+                if($field_type == "select") {
+                    $result = "Select the ".$field_name;
+                }
+                else {
+                    $result = "Enter the ".$field_name;
+                }
+            }
+            return $result;
+        }
+
 
 		public function valid_name($field_value, $field_name, $required) {
 			$result = "";
@@ -347,33 +348,70 @@
 			}
 			return $result;
 		}
-		public function valid_address($field_value, $field_name, $required) {
+
+		public function valid_date($field_value, $field_name, $required) {
 			$result = "";
 			$field_value = trim($field_value);
 			if(!empty($field_value)) {
 				$result = $this->common_validation($field_value, $field_name, '');
 				if(empty($result)) {
-					if(!preg_match("/^(?!\d+$)[\w]*[\w\:\-\s \/\.\,\#\@\&\[\]\(\)]*$/", $field_value)) {
+					if(date('d-m-Y', strtotime($field_value)) != $field_value) {
 						$result = "Invalid ".$field_name;
 					}
 				}
 			}
 			else {
 				if($required == 1) {
-					$result = "Enter the ".$field_name;
+					$result = "Select the ".$field_name;
+				}
+			}
+			return $result;
+		} 
+		public function row_error_display($form_name, $field, $error, $type, $row_name, $row_no) {
+			$result = ""; $sno_element = ""; $extra_parent = "";
+			
+			if(!empty($error) && !empty($row_no)) {
+				$sno_element = "var snoElement = jQuery(\"form[name='".$form_name."'] tr.".$row_name." .sno\").filter(function() {
+					return jQuery(this).text().trim() == ".$row_no.";
+				});";
+				
+				if ($type == "text") {
+					$result = $sno_element."
+						if(snoElement.parent().find(\"input[name='".$field."']\").parent().find('span.infos').length == 0) {
+							snoElement.parent().find(\"input[name='".$field."']\")".$extra_parent.".after('<span class=\"infos w-100\"> <i class=\"fa fa-exclamation-circle\"></i> ".$error."</span>');
+						}";
+				}
+				
+				if($type == "textarea") {
+					$result = $sno_element."
+						if(snoElement.parent().find(\"textarea[name='".$field."']\").parent().find('span.infos').length == 0) {
+							snoElement.parent().find(\"textarea[name='".$field."']\").after('<span class=\"infos w-100\"> <i class=\"fa fa-exclamation-circle\"></i> ".$error."</span>');
+							snoElement.parent().find(\"textarea[name='".$field."']\").focus();
+						}";
+				}
+				if($type == "select") {
+					$result = $sno_element."
+						if(snoElement.parent().find(\"select[name='".$field."']\").parent().find('span.infos').length == 0) {
+							snoElement.parent().find(\"select[name='".$field."']\").parent().after('<span class=\"infos w-100\"> <i class=\"fa fa-exclamation-circle\"></i> ".$error."</span>');
+							snoElement.parent().find(\"select[name='".$field."']\").focus();
+						}";
 				}
 			}
 			return $result;
 		}	
-		public function valid_party_name($field_value, $field_name, $required) {
+
+		public function valid_party_name($field_value, $field_name, $required, $characters) {
 			$result = "";
 			$field_value = trim($field_value);
 			if(!empty($field_value)) {
 				$result = $this->common_validation($field_value, $field_name, '');
 				if(empty($result)) {
-					if(!preg_match("/^[a-zA-Z]+[a-zA-Z\s \.]*$/", $field_value)) {
+					if(!preg_match("/^(?=.*[a-zA-Z])[a-zA-Z\s&\.\'-]+$/", $field_value)) {
 						$result = "Invalid ".$field_name;
 					}
+                    else if(!empty($characters) && preg_match("/^[0-9]*$/", $characters) && strlen($field_value) > $characters) {
+                        $result = "Only ".$characters." characters are allowed for ".$field_name;
+                    }
 				}
 			}
 			else {
@@ -382,7 +420,28 @@
 				}
 			}
 			return $result;
-		}					
+		}
+		
+		
+		public function valid_address($field_value, $field_name, $required, $characters) {
+			$result = "";
+			$field_value = trim($field_value);
+			if(!empty($field_value)) {
+				if(preg_match("/[?!<>$+=`~|?;^*{}]/", $field_value)) {
+					$result = "Invalid ".$field_name;
+				}
+                else if(!empty($characters) && preg_match("/^[0-9]*$/", $characters) && strlen($field_value) > $characters) {
+                    $result = "Only ".$characters." characters are allowed for ".$field_name;
+                }
+			}
+			else {
+				if($required == 1) {
+					$result = "Enter the ".$field_name;
+				}
+			}
+			return $result;
+		}
+
 		public function valid_pincode($field_value, $field_name, $required) {
 			$result = "";
 			$field_value = trim($field_value);
@@ -405,25 +464,7 @@
 				}
 			}
 			return $result;
-		}		
-		public function valid_date($field_value, $field_name, $required) {
-			$result = "";
-			$field_value = trim($field_value);
-			if(!empty($field_value)) {
-				$result = $this->common_validation($field_value, $field_name, '');
-				if(empty($result)) {
-					if(date('d-m-Y', strtotime($field_value)) != $field_value) {
-						$result = "Invalid ".$field_name;
-					}
-				}
-			}
-			else {
-				if($required == 1) {
-					$result = "Select the ".$field_name;
-				}
-			}
-			return $result;
-		} 						
+		}											
 	}
 
 ?>

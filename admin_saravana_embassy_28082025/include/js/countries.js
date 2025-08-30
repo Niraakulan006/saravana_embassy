@@ -258,9 +258,67 @@ state_index[250] = "Kosovo|Montenegro|Serbia|Vojvodina";
 state_index[251] = "Central|Copperbelt|Eastern|Luapula|Lusaka|North-Western|Northern|Southern|Western";
 state_index[252] = "Bulawayo|Harare|ManicalandMashonaland Central|Mashonaland East|Mashonaland West|Masvingo|Matabeleland North|Matabeleland South|Midlands";
 
-function getCountries(form_name,country, state, district, city) {
-	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="country"]').length > 0) {
-		var countryElement = document.forms[form_name+"_form"]["country"];
+// function getCountries(form_name,country, state, district, city) {
+// 	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="country"]').length > 0) {
+// 		var countryElement = document.forms[form_name+"_form"]["country"];
+// 		if (countryElement != null) {
+// 			countryElement.length = 0;
+// 			countryElement.options[0] = new Option('Select', '');
+// 			countryElement.selectedIndex = 0;
+// 			for (var i = 0; i < country_arr.length; i++) {
+// 				countryElement.options[countryElement.length] = new Option(country_arr[i], country_arr[i]);
+// 				if (country_arr[i] == country) {
+// 					countryElement.selectedIndex = parseInt(i) + 1;
+// 				}
+// 			}
+			
+// 			getStates(form_name, state, district, city);
+// 			countryElement.onchange = function () {
+// 				jQuery(this).closest('.select2-search__field').focus();
+// 				getStates(form_name, state, district, city);
+// 			};
+// 		}
+// 	}
+// }
+
+
+// function getStates(form_name, state, district, city) {
+// 	// console.log(form_name+"/"+state+"/"+district+"/"+"/"+city)
+// 	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="country"]').length > 0) {
+		
+// 		var selectedCountryIndex = document.forms[form_name+"_form"]["country"].selectedIndex;
+// 		var country = country_arr[selectedCountryIndex - 1];
+// 		var selected_country = document.forms[form_name+"_form"]["country"].value;
+// 		var stateElement = document.forms[form_name+"_form"]["state"];		
+// 		stateElement.length = 0;
+// 		stateElement.options[0] = new Option('Select', '');
+// 		stateElement.selectedIndex = 0;
+// 		if (country == selected_country) {
+// 			var state_arr = state_index[selectedCountryIndex].split("|");
+// 			 stateElement.innerHTML = '<option value="">Select State</option>';
+// 			for (var i = 0; i < state_arr.length; i++) {
+
+// 				stateElement.options[stateElement.length] = new Option(state_arr[i], state_arr[i]);
+// 				if (state_arr[i] == state) {
+// 					stateElement.selectedIndex = parseInt(i) + 1;
+// 				}
+// 			}
+// 			getDistricts(form_name, district, city);
+// 			stateElement.onchange = function () {
+// 				jQuery(this).closest('.select2-selection--single').css('border','1px solid #ced4da');
+// 				jQuery(this).parent().parent().find('.infos').remove();
+// 				getDistricts(form_name, district, city);
+// 			};
+
+// 		}
+// 	}
+// }
+function getCountries(form_name, country, state, district, city, context) {
+	let formScope = context ? $(context).find('form[name="' + form_name + '_form"]')
+		: $('form[name="' + form_name + '_form"]');
+
+	if (formScope.find('select[name="country"]').length > 0) {
+		var countryElement = formScope.find('select[name="country"]')[0];;
 		if (countryElement != null) {
 			countryElement.length = 0;
 			countryElement.options[0] = new Option('Select', '');
@@ -271,40 +329,52 @@ function getCountries(form_name,country, state, district, city) {
 					countryElement.selectedIndex = parseInt(i) + 1;
 				}
 			}
-			getStates(form_name, state, district, city);
+			getStates(form_name, state, district, city, context);
 			countryElement.onchange = function () {
 				jQuery(this).closest('.select2-search__field').focus();
-				getStates(form_name, state, district, city);
+				getStates(form_name, state, district, city, context);
 			};
 		}
 	}
 }
+function getStates(form_name, state, district, city, context) {
+	// If context is given (modal), search inside it; otherwise search whole page
+	let formScope = context
+		? $(context).find('form[name="' + form_name + '_form"]')
+		: $('form[name="' + form_name + '_form"]');
 
-function getStates(form_name, state, district, city) {
-	if (jQuery('form[name="'+form_name+'_form"]').find('select[name="country"]').length > 0) {
-		
-		var selectedCountryIndex = document.forms[form_name+"_form"]["country"].selectedIndex;
-		var country = country_arr[selectedCountryIndex - 1];
-		var selected_country = document.forms[form_name+"_form"]["country"].value;
-		var stateElement = document.forms[form_name+"_form"]["state"];		
+	// Get the selects inside the scoped form
+	let countryElement = formScope.find('select[name="country"]')[0];
+	let stateElement = formScope.find('select[name="state"]')[0];
+
+	if (countryElement && stateElement) {
+		let selectedCountryIndex = countryElement.selectedIndex;
+		let selected_country = countryElement.value;
+
+		// Reset state dropdown
 		stateElement.length = 0;
 		stateElement.options[0] = new Option('Select', '');
 		stateElement.selectedIndex = 0;
-		if (country == selected_country) {
-			var state_arr = state_index[selectedCountryIndex].split("|");
-			for (var i = 0; i < state_arr.length; i++) {
+
+		// Load states if valid
+		if (selectedCountryIndex > 0) {
+			let state_arr = state_index[selectedCountryIndex].split("|");
+			for (let i = 0; i < state_arr.length; i++) {
 				stateElement.options[stateElement.length] = new Option(state_arr[i], state_arr[i]);
-				if (state_arr[i] == state) {
-					stateElement.selectedIndex = parseInt(i) + 1;
+				if (state_arr[i] === state) {
+					stateElement.selectedIndex = i + 1;
 				}
 			}
-			getDistricts(form_name, district, city);
-			stateElement.onchange = function () {
-				jQuery(this).closest('.select2-selection--single').css('border','1px solid #ced4da');
-				jQuery(this).parent().parent().find('.infos').remove();
-				getDistricts(form_name, district, city);
-			};
 
+			// Load districts after state
+			getDistricts(form_name, district, city, context);
+
+			// On change event
+			stateElement.onchange = function () {
+				jQuery(this).closest('.select2-selection--single').css('border', '1px solid #ced4da');
+				jQuery(this).parent().parent().find('.infos').remove();
+				getDistricts(form_name, district, city, context);
+			};
 		}
 	}
 }

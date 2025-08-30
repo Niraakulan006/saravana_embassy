@@ -309,6 +309,15 @@
                                 <li class="nav-item" id="category">
                                     <a href="category.php" class="nav-link"><i class="bi bi-dash"></i> Category</a>
                                 </li>
+                                <li class="nav-item" id="desktop_banner">
+                                    <a href="desktop_banner.php" class="nav-link"><i class="bi bi-dash"></i> Desktop Banner</a>
+                                </li>
+                                <li class="nav-item" id="mobile_banner">
+                                    <a href="mobile_banner.php" class="nav-link"><i class="bi bi-dash"></i> Mobile Banner</a>
+                                </li>
+                                <li class="nav-item" id="meta_tags">
+                                    <a href="meta_tags.php" class="nav-link"><i class="bi bi-dash"></i> Meta Tags </a>
+                                </li>                                
                                 <li class="nav-item" id="attribute">
                                     <a href="attribute.php" class="nav-link"><i class="bi bi-dash"></i> Attribute</a>
                                 </li>

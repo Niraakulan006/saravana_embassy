@@ -660,5 +660,43 @@
 			}
 			return $acccess_permission;
 		}
+		public function getOtherCityList($district) {
+			$company_query = ""; $customer_query = ""; 
+			$select_query = ""; $list = array();
+	
+			$company_query = "SELECT DISTINCT(city) as others_city FROM ".$GLOBALS['company_table']." WHERE district = '".$district."' AND city != '".$GLOBALS['null_value']."' ORDER BY id DESC";
+			$customer_query = "SELECT DISTINCT(city) as others_city FROM ".$GLOBALS['customer_table']." WHERE district = '".$district."' AND city != '".$GLOBALS['null_value']."' ORDER BY id DESC";
+			
+	
+			$select_query = "SELECT DISTINCT(others_city) as city FROM ((".$company_query.") UNION ALL (".$customer_query.")) as g";
+	
+			$list = $this->getQueryRecords('', $select_query);
+	
+			return $list;
+		}	
+		public function getUserList() {
+			$list = array();
+			$select_query = "SELECT u.*, r.role_name FROM ".$GLOBALS['user_table']." as u 
+								LEFT JOIN ".$GLOBALS['role_table']." as r ON r.role_id = u.role_id
+								WHERE u.deleted = '0'  ORDER BY u.id DESC";
+			$list = $this->getQueryRecords($GLOBALS['user_table'], $select_query);
+			return $list;
+		}
+
+		public function CompanyCount() {
+			$select_query = ""; $list = array(); $count = 0;
+			$select_query = "SELECT COUNT(id) as company_count FROM ".$GLOBALS['company_table']." WHERE deleted = '0'";
+			$list = $this->getQueryRecords($GLOBALS['company_table'], $select_query);
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['company_count'])) {
+						$count = $data['company_count'];
+						$count = trim($count);
+					}
+				}
+			}
+			return $count;
+		}
+
 	}	
 ?>

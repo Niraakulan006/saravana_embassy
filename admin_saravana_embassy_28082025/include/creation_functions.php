@@ -95,6 +95,79 @@
 			}
 			return $list;
 		}	
+		public function customerMobileExists($mobile_number) {
+			$list = array(); $select_query = ""; $customer_id = ""; $where = "";
+			
+			if(!empty($mobile_number)) {
+				$select_query = "SELECT customer_id FROM ".$GLOBALS['customer_table']." WHERE mobile_number = '".$mobile_number."' AND deleted = '0'";	
+			}
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['customer_table'], $select_query);
+				if(!empty($list)) {
+					foreach($list as $data) {
+						if(!empty($data['customer_id'])) {
+							$customer_id = $data['customer_id'];
+						}
+					}
+				}
+			}
+			return $customer_id;
+		}
+
+		public function FilterCustomerList($customer_type){
+			$where = "";
+			if(!empty($customer_type)) {
+				$where = " customer_type = '".$customer_type."'";
+			}
+
+			if(!empty($where)) {
+                $select_query = "SELECT * FROM ".$GLOBALS['customer_table']." WHERE ".$where." AND deleted = '0' ORDER BY id DESC";
+            } 
+            else {
+                $select_query = "SELECT * FROM ".$GLOBALS['customer_table']." WHERE deleted = '0' ORDER BY id DESC";
+            }
+            if(!empty($select_query)) {
+                $list = $this->getQueryRecords($GLOBALS['customer_table'], $select_query);
+            }
+            return $list;
+		}	
+		public function CheckUserIDAlreadyExists($user_id) {
+			$select_query = ""; $list = array(); $where = ""; $id = "";
+			if(!empty($user_id)) {
+				$where = "lower_case_name = '".$user_id."' AND ";
+				$select_query = "SELECT userid FROM 
+									((SELECT user_id as userid FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['userid']) && $data['userid'] != $GLOBALS['null_value']) {
+						$id = $data['userid'];
+					}
+				}
+			}
+			return $id;
+		}
+
+		public function CheckUserNoAlreadyExists($mobile_number) {
+			$select_query = ""; $list = array(); $where = ""; $id = "";
+			if(!empty($mobile_number)) {
+				$where = "mobile_number = '".$mobile_number."' AND ";
+				$select_query = "SELECT userid FROM 
+									((SELECT user_id as userid FROM ".$GLOBALS['user_table']." WHERE ".$where." deleted = '0'))
+								as g";
+				$list = $this->getQueryRecords('', $select_query);
+			}
+			if(!empty($list)) {
+				foreach($list as $data) {
+					if(!empty($data['userid']) && $data['userid'] != $GLOBALS['null_value']) {
+						$id = $data['userid'];
+					}
+				}
+			}
+			return $id;
+		}			
     }
 
 

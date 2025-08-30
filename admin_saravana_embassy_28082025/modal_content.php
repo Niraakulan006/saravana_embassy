@@ -112,3 +112,24 @@
         </div>
     </div>
 </div>
+<button type="button" data-bs-toggle="modal" data-bs-target="#DeleteBannerModal" class="d-none delete_banner_modal_button"></button>
+<!-- The Modal -->
+<div class="modal fade" id="DeleteBannerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title h5">Delete</h1>
+                <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure want to delete this Banner Image?
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="position_name" value="">
+                <button type="button" class="btn btn-danger yes" onClick="Javascript:delete_banner_image(this);">Yes</button>
+                <button type="button" class="btn btn-success no" data-bs-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>

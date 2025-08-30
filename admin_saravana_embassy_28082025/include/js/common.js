@@ -619,3 +619,116 @@ function cancel_delete_modal(obj) {
 		}
 	});
 }
+function GetMetaTagsFile(file_value) {
+	if(file_value != "") {
+		var post_url = "meta_tags_changes.php?meta_file_name="+file_value;
+		jQuery.ajax({
+			url: post_url, success: function (result) {
+				if(jQuery('.separate_row').length > 0) {
+					jQuery('.separate_row').html('');
+					jQuery('.separate_row').html(result);
+				}
+			}
+		});
+	}
+}
+
+function getCharCount(obj, chat_count_class, chat_total_count_class) {
+	var char_total_count = 0;
+	if(jQuery('.'+chat_total_count_class).length > 0) {
+		char_total_count = jQuery('.'+chat_total_count_class).html();
+		char_total_count = char_total_count.trim();
+		if(char_total_count != 0 && char_total_count != "" && typeof char_total_count != "undefined") {
+			var char_value = jQuery(obj).val();
+			char_value = char_value.trim();
+			if(char_value != '' && typeof char_value != "undefined") {
+				var char_count = char_value.length;
+				if(jQuery('.'+chat_count_class).length > 0) {
+					if(parseInt(char_count) <= parseInt(char_total_count)) {
+						jQuery('.'+chat_count_class).html(char_count);
+					}
+					else {
+						jQuery('.'+chat_count_class).html(char_total_count);
+						char_value = char_value.subString(0, char_total_count); 
+						jQuery(obj).val(char_value);
+					}
+				}
+			}
+			else {
+				jQuery('.'+chat_count_class).html('');
+			}
+		}
+		else {
+			jQuery('.'+chat_count_class).html('');
+		}
+	}	
+}
+function delete_banner_modal(obj, field) {
+	if(jQuery('#DeleteBannerModal').length > 0) {
+		var banner_name = "";
+		if(jQuery(obj).parent().find('input[name="banner_name[]"]').length > 0) {
+			banner_name = jQuery(obj).parent().find('input[name="banner_name[]"]').val().trim();
+		}
+		if(jQuery('.delete_banner_modal_button').length > 0) {
+			jQuery('.delete_banner_modal_button').trigger('click');
+		}
+		if(jQuery('input[name="position_name"]').length > 0) {
+			jQuery('input[name="position_name"]').val(field);
+		}
+		jQuery('#DeleteBannerModal .modal-footer .yes').attr('id', banner_name);
+	}
+}
+function delete_banner_image(obj) {
+	var banner_name = "";
+	banner_name = jQuery(obj).attr('id');
+	var position_name = "";
+	if(jQuery(obj).parent().find('input[name="position_name"]').length > 0) {
+		position_name = jQuery(obj).parent().find('input[name="position_name"]').val().trim();
+	}
+	var form_name = "";
+	if(position_name == "desktop_home_banner") {
+		form_name = "desktop_banner_form";
+	}
+	else if(position_name == "mobile_home_banner") {
+		form_name = "mobile_banner_form";
+	}
+	var post_url = "banner_changes.php?delete_banner_image="+banner_name+"&delete_position_name="+position_name;
+	jQuery.ajax({
+		url: post_url, success: function (data) {
+			if(data != "") {
+				if(jQuery('#DeleteBannerModal').find('.btn-close').length > 0) {
+					jQuery('#DeleteBannerModal').find('.btn-close').trigger('click');
+				}
+				try {
+					var x = JSON.parse(data);
+				} catch (e) {
+					return false;
+				}
+				if (x.number == '1') {
+					jQuery('form[name="'+form_name+'"]').find('.row:first').before('<div class="alert alert-success"> <button type="button" class="close" data-dismiss="alert">&times;</button> ' + x.msg + ' </div>');
+					setTimeout(function () {
+						if (jQuery('.redirection_form').length > 0) {
+							if(position_name == "Desktop") {
+								window.location = "desktop_banner.php";
+							}
+							else if(position_name == "Mobile") {
+								window.location = "mobile_banner.php";
+							}
+							window.location.reload();
+						}
+					}, 1000);
+				}
+			}
+		}
+	});
+}
+function checkisTechnician() {
+	var is_technician = 1;
+	if (jQuery('input[name="is_technician"]').prop('checked') == false) {
+		is_technician = 2;
+	}
+
+	if (jQuery('input[name="is_technician"]').length > 0) {
+		jQuery('input[name="is_technician"]').val(is_technician);
+	}
+}

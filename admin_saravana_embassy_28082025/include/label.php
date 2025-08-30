@@ -16,7 +16,9 @@
 	
 	// Tables
 	$GLOBALS['user_table'] = ""; $GLOBALS['company_table'] = "company";
-
+	$GLOBALS['image_format'] = ".webp";
+	$GLOBALS['max_description_length'] = 150; 
+    $GLOBALS['max_user_count'] = 5;
 
 	$GLOBALS['Reset_to_one'] = "Reset To 1"; $GLOBALS['continue_last_number'] = "Continue from last number"; $GLOBALS['custom_number'] = "Custom Number";
 	
@@ -47,6 +49,12 @@
 	$GLOBALS['brand_table'] = $table_prefix.'brand';
 	$GLOBALS['attribute_table'] = $table_prefix.'attribute';
 	$GLOBALS['attribute_value_table'] = $table_prefix.'attribute_value';
+	$GLOBALS['customer_table'] = $table_prefix.'customer';
+	$GLOBALS['product_combination_table'] = $table_prefix.'product_combination';
+	$GLOBALS['product_variety_table'] = $table_prefix.'product_variety';	
+	$GLOBALS['home_banner_table'] = $table_prefix.'home_banner';
+	$GLOBALS['meta_tags_table'] = $table_prefix.'meta_tags';	
+	$GLOBALS['role_permission_table'] = $table_prefix."role_permission";
 
 	$GLOBALS['company_module'] = 'Company';	
 	$GLOBALS['category_module'] = 'Category';	
@@ -56,6 +64,7 @@
 	$GLOBALS['brand_module'] = 'Brand';
 	$GLOBALS['attribute_module'] = 'Attribute';
 	$GLOBALS['attribute_value_module'] = 'Attribute value';
+	$GLOBALS['customer_module'] = 'Customer';	
 
 	$user_access_pages_list = array();
 	$user_access_pages_list[] = $GLOBALS['company_module'];
@@ -66,5 +75,6 @@
 	$user_access_pages_list[] = $GLOBALS['brand_module'];
 	$user_access_pages_list[] = $GLOBALS['attribute_module'];
 	$user_access_pages_list[] = $GLOBALS['attribute_value_module'];
+	$user_access_pages_list[] = $GLOBALS['customer_module'];	
 
 ?>

@@ -53,7 +53,7 @@
 							if (in_array($extension, $extension_list)) {
 								if(!empty($image_name) && !empty($extension) && $extension != "webp") {
 									$webp_image = str_replace(".".$extension, "", $image_name);
-									$im = ""; $webp_image = $webp_image.'.webp';
+									$im = ""; $webp_image = $webp_image.$GLOBALS['image_format'];
 									if(!file_exists($temp_dir.$webp_image)) {
 										if($extension == "png" || $extension == "jpg" || $extension == "jpeg") {
 
@@ -70,6 +70,12 @@
 												}
 
 												$width = 500; $height = 500;
+												if($preview_name == "desktop_home_banner") {
+													$width = 1500; $height = 500;
+												}
+												else if($preview_name == "mobile_home_banner") {
+													$width = 630; $height = 700;
+												}												
 												$ratio_orig = $width_orig/$height_orig;
 
 												if ($width/$height > $ratio_orig) {
@@ -99,12 +105,48 @@
 							if(!empty($image_size) && $image_size < 2000000) {
 
 								$date_time = date("dmyhis");
-								if(!empty($preview_name) && $preview_name == "product_image") {
-									$msg = '<button type="button" onclick="Javascript:delete_multiple_files(this);" class="btn btn-danger"><i class="fa fa-close"></i></button>
-											<img id="'.$field_name.'_preview" src = "'.$temp_dir.$image_name.'?t='.$date_time.'" class="img-fluid">
+								if(!empty($preview_name) && $preview_name == "multiple_image") {
+									$msg = '<div class="col-lg-3 col-md-3 col-6 pt-4"><button type="button" onclick="Javascript:delete_multiple_files(this);" class="btn btn-danger"><i class="fa fa-close"></i></button>
+											<img id="'.$field_name.'_preview" src = "'.$temp_dir.$image_name.'?t='.$date_time.'" class="img-fluid w-75 mx-auto d-block">
 											<input type="hidden" name="'.$display_page.'_name[]" class="form-control" value="'.$image_name.'">
-											';
-								}
+											</div>';
+								}else if($preview_name == "desktop_home_banner" || $preview_name == "mobile_home_banner") {
+										$category_list = array();
+										$category_list = $obj->getTableRecords($GLOBALS['category_table'], '', '');
+										
+										$msg = "";
+										$msg .= '<button type="button" onclick="Javascript:delete_multiple_files(this, '."'".$preview_name."'".');" class="btn btn-danger float-end"><i class="fa fa-close"></i></button>
+												<img id="'.$field_name.'_preview" src = "'.$temp_dir.$image_name.'?t='.$date_time.'" class="img-fluid">
+												<input type="hidden" name="banner_name[]" class="form-control" value="'.$image_name.'">
+												<div class="row banner_row mx-0 mt-2">
+													<div class="col-sm-3">
+														<input type="text" name="banner_position[]" class="form-control mx-auto" value="" placeholder="Position" style="width: 100px;">
+													</div>
+													<div class="col-sm-9">
+														<div class="form-group">
+															<div class="w-100">
+																<select class="form-control" name="banner_category_id[]">
+																	<option value="">Select Category</option>
+																	<option value="all">All</option>';
+										if(!empty($category_list)) {
+											foreach($category_list as $data) {
+												if(!empty($data['category_id']) && $data["name"] != $GLOBALS['null_value']) {
+													$msg .= '<option value="'.$data["category_id"].'">'.$obj->encode_decode("decrypt", $data["name"]).'</option>';
+												}
+											}
+										}
+										$msg .= '				</select>
+															</div>
+														</div>
+													</div>
+													<script type="text/javascript">
+														if(jQuery(".banner_row").find("select").length > 0) {
+															jQuery(".banner_row").find("select").select2();
+														}
+													</script>
+												</div>
+												';
+									}
 								else {
 									$msg = '<button type="button" onclick="Javascript:delete_upload_image_before_save(this, '."'".$preview_name."'".', '."'".$image_name."'".');" class="btn btn-danger"><i class="fa fa-close"></i></button>
 											<img id="'.$field_name.'_preview" src = "'.$temp_dir.$image_name.'?t='.$date_time.'" class="img-fluid">

@@ -61,9 +61,9 @@
                             <label for="brand_image">  
                                 <div class="brand_image_list row">
                                     <div class="cover">
-                                        <?php if(!empty($brand_image) && file_exists($target_dir.$brand_image.'.webp') ) { ?>
+                                        <?php if(!empty($brand_image) && file_exists($target_dir.$brand_image.$GLOBALS['image_format']) ) { ?>
                                             <button type="button" onclick="Javascript:delete_upload_image_before_save(this, 'brand_image', '<?php if(!empty($brand_image)) { echo $brand_image; } ?>');" class="btn btn-danger"><i class="fa fa-close"></i></button>
-                                            <img id="brand_image_preview" src="<?php echo $target_dir.$brand_image.'.webp'; ?>" style="max-width: 100%; max-height: 150px;" />
+                                            <img id="brand_image_preview" src="<?php echo $target_dir.$brand_image.$GLOBALS['image_format']; ?>" style="max-width: 100%; max-height: 150px;" />
                                             <input type="hidden" name="brand_image_name[]" value="<?php if(!empty($brand_image)) { echo $brand_image; } ?>">
                                         <?php } else { ?>
                                             <img id="brand_image_preview" src="images/cloudupload.png" style="max-width: 150px;" />
@@ -223,7 +223,7 @@
                                     unlink($target_dir.$prev_brand_image);
                                 }
                             }
-                            copy($temp_dir.$brand_image, $target_dir.$brand_image.'.webp');
+                            copy($temp_dir.$brand_image, $target_dir.$brand_image.$GLOBALS['image_format']);
                         }
                         else {
                             if($brand_image == $GLOBALS['null_value']) {

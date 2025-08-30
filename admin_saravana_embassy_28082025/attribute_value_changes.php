@@ -342,7 +342,7 @@ if(isset($_POST['attribute_value'])){
                 
             $selectbox_category_id =""; $selected_attr="";
             $selectbox_category_id = $_POST['category_id'];
-            $selected_attr = $_POST['attribute_id'];
+            $selected_attr = $_POST['attribute_ids'];
             $selected_attr_value = $_POST['attribute_value'];
             if(!empty($selectbox_category_id) && !empty($selected_attr) && !empty($selected_attr_value) && empty($category_ids)){
                 $attr_add_error = "Click Add Button to Append Attribute value";
@@ -581,7 +581,6 @@ if(isset($_POST['page_number'])) {
                     <th>Category Name</th>
                     <th>Attribute Name</th>
                     <th>Attribute Value</th>
-                    <th>Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -628,16 +627,6 @@ if(isset($_POST['page_number'])) {
                                             echo $list['attribute_value'];
                                         }
                                     ?>
-                                    </td>
-                                    <td>
-                                        <div class="form-group mb-1">
-                                            <div class="flex-shrink-0">
-                                                <div class="form-check form-switch form-switch-right form-switch-md">
-                                                    <label for="FormSelectDefault" class="form-label text-muted"> </label>
-                                                    <input class="form-check-input code-switcher" type="checkbox" id="FormSelectDefault">
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                     <td>
                                         <?php $edit_access_error = "";

@@ -262,7 +262,7 @@
                 $address_error = "Only 150 characters allowed";
             }
             else{
-                $address_error = $valid->valid_address($address,'address','1');
+                $address_error = $valid->valid_address($address,'address','1','');
             }
             if(!empty($address_error)){
                 if(!empty($valid_company)) {
@@ -549,7 +549,7 @@
 
                             $null_value = $GLOBALS['null_value'];
                             $columns = array('created_date_time', 'creator', 'creator_name', 'company_id', 'name', 'lower_case_name','email', 'gst_number', 'mobile_number','address', 'state','district','city', 'pincode','others_city','primary_company', 'logo','deleted');
-                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$name."'", "'".$lower_case_name."'","'".$email."'","'".$gst_number."'","'".$mobile_number."'",  "'".$address."'", "'".$state."'", "'".$district."'", "'".$city."'", "'".$pincode."'","'".$others_city."'","'".$primary_company."'", "'".$logo.'.webp'."'", "'0'");
+                            $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$null_value."'", "'".$name."'", "'".$lower_case_name."'","'".$email."'","'".$gst_number."'","'".$mobile_number."'",  "'".$address."'", "'".$state."'", "'".$district."'", "'".$city."'", "'".$pincode."'","'".$others_city."'","'".$primary_company."'", "'".$logo.$GLOBALS['image_format']."'", "'0'");
                             $company_insert_id = $obj->InsertSQL($GLOBALS['company_table'], $columns, $values,'company_id', '', $action);	               
                             if(preg_match("/^\d+$/", $company_insert_id)) {
                                 $image_copy = 1;
@@ -589,7 +589,7 @@
 
                                 $columns = array(); $values = array();						
                                 $columns = array('creator_name', 'name', 'lower_case_name','email','gst_number','mobile_number','address', 'city', 'district', 'state', 'pincode','others_city','logo');
-                                $values = array("'".$creator_name."'", "'".$name."'", "'".$lower_case_name."'","'".$email."'","'".$gst_number."'","'".$mobile_number."'","'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$pincode."'","'".$others_city."'","'".$logo.'.webp'."'");
+                                $values = array("'".$creator_name."'", "'".$name."'", "'".$lower_case_name."'","'".$email."'","'".$gst_number."'","'".$mobile_number."'","'".$address."'", "'".$city."'", "'".$district."'", "'".$state."'", "'".$pincode."'","'".$others_city."'","'".$logo.$GLOBALS['image_format']."'");
                                 $company_update_id = $obj->UpdateSQL($GLOBALS['company_table'], $getUniqueID, $columns, $values, $action);
                                 if(preg_match("/^\d+$/", $company_update_id)) {
                                     $image_copy = 1;
@@ -618,7 +618,7 @@
                                     unlink($target_dir.$prev_logo);
                                 }
                             }
-                            copy($temp_dir.$logo, $target_dir.$logo.'.webp');
+                            copy($temp_dir.$logo, $target_dir.$logo.$GLOBALS['image_format']);
                         }
                         else {
                             if($logo == $GLOBALS['null_value']) {

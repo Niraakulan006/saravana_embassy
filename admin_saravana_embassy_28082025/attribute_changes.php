@@ -519,7 +519,6 @@
                         <th>S.No</th>
                         <th>Category Name</th>
                         <th>Attribute Name</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -553,16 +552,6 @@
                                             echo $list['attribute_name'];
                                         }
                                     ?>
-                                    </td>
-                                    <td>
-                                        <div class="form-group mb-1">
-                                            <div class="flex-shrink-0">
-                                                <div class="form-check form-switch form-switch-right form-switch-md">
-                                                    <label for="FormSelectDefault" class="form-label text-muted"> </label>
-                                                    <input class="form-check-input code-switcher" type="checkbox" id="FormSelectDefault">
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                     <td>
                                     <?php $edit_access_error = "";
