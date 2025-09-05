@@ -268,7 +268,7 @@
                                                 <div class="cover">                                                    
                                                     <img  id="multiple_image_preview" src="images/cloudupload.png" class="img-fluid w-25 mx-auto d-block" alt="Upload" title="Upload">
                                                     <div class="text-center smallfnt">(Upload jpg, Png Format Less than 2MB)</div>
-                                                    <div class="text-center smallfnt">(Image Size 800 x 800)</div>
+                                                    <div class="text-center smallfnt">(Image Size 600 x 600)</div>
                                                     <div class="text-center smallfnt">(Max 4 images)</div>
                                                 </div>
                                             </div>
@@ -621,7 +621,7 @@
 		}
 		if(isset($_POST['hsn_code'])){
 			$hsn_code =$_POST['hsn_code'];
-             $hsn_code_error = $valid->valid_number($hsn_code, "HSN code", "1");
+            //  $hsn_code_error = $valid->valid_number($hsn_code, "HSN code", "1");
             if(!empty($hsn_code_error)) {
                 if(!empty($valid_product)) {
                     $valid_product = $valid_product." ".$valid->error_display($form_name, "hsn_code", $hsn_code_error, 'text');
@@ -1440,7 +1440,7 @@
                                     include('user_permission_action.php');
                                 }
                                 if(empty($access_error)) { ?>
-                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#queriesModal"><i class="fa fa-eye"></i> Queries</a></li>
+                                    <li><a class="dropdown-item" onclick="showQueries('<?php if(!empty($list['product_id'])) { echo $list['product_id']; } ?>')" data-bs-toggle="modal" data-bs-target="#queriesModal"><i class="fa fa-eye"></i> Queries</a></li>
                                     <li><a class="dropdown-item" href="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($list['product_id'])) { echo $list['product_id']; } ?>');"><i class="fa fa-pencil"></i> Edit</a></li>
 
                                 <?php }  
@@ -1470,9 +1470,398 @@
                     </tr>
                     <?php } ?>
                 </tbody>
-            </table>               
+            </table>           
+            <script>
+                function showQueries(product_id){
+                    $('#query_product_id').val(product_id);
+                    loadQueries(product_id);
+                }
+            </script>    
 		<?php	
                     }
         }
 	}
-    ?>
+    if(isset($_REQUEST['show_queries_page'])){
+        $show_queries_page = $_REQUEST['show_queries_page'];
+        $product_id = $_REQUEST['product_id'];
+        $question = "";
+        if(!empty($show_queries_page)){
+            $question = $obj->getTableColumnValue($GLOBALS['product_query_table'], 'query_id', $show_queries_page, 'question');
+            $question = $obj->encode_decode('decrypt', $question);
+        }
+        ?>
+        <form class="poppins pd-20 redirection_form" name="queries_form" method="POST">
+			<div class="card-header">
+				<div class="row p-2">
+					<div class="col-lg-8 col-md-8 col-8 align-self-center">
+                        <?php if(empty($show_queries_page)){ ?>
+						    <div class="h5">Add Queries</div>
+                        <?php }  else { ?>
+                            <div class="h5">Edit Queries</div>
+                        <?php } ?>
+					</div>
+					<div class="col-lg-4 col-md-4 col-4">
+						<button class="btn btn-dark float-end" style="font-size:11px;" type="button" onclick="window.open('product.php','_self')"> <i class="fa fa-arrow-circle-o-left"></i> &ensp; Back </button>
+					</div>
+				</div>
+			</div>
+            <div class="row justify-content-center p-3">
+                <input type="hidden" name="edit_query_id" value="<?php if(!empty($show_queries_page)) { echo $show_queries_page; } ?>">
+                <input type="hidden" name="product_id" value="<?php if(!empty($product_id)) { echo $product_id; } ?>">
+
+                <div class="col-lg-3 col-md-6 col-12 py-2">
+                    <div class="form-group">
+                        <div class="form-label-group in-border">
+                            <div class="input-group">
+                                <input type="text" id="question_name" name="question_name" class="form-control shadow-none add_click_enter" value="<?php if(!empty($question)) { echo $question; } ?>" placeholder="">
+                                <label>Question</label>
+                                <?php if(empty($show_queries_page)){ ?>
+                                    <div class="input-group-append">
+                                        <button class="btn btn-danger" type="button" onClick="Javascript:addQueries();"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center p-3"> 
+                <?php if(empty($show_queries_page)){ ?>
+                    <div class="col-lg-6">
+                        <div class="table-responsive text-center">
+                            <input type="hidden" name="attribute_count" value="<?php if(!empty($attribute_row_index)) { echo $attribute_row_index; } else { echo "0"; } ?>">
+                            <table class="table nowrap cursor smallfnt w-100 table-bordered added_query_table">
+                                <thead class="bg-dark smallfnt">
+                                    <tr style="white-space:pre;">
+                                        <th>#</th>
+                                        <th>Question</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                </tbody> 
+                            </table>
+                        </div>
+                    </div> 
+                <?php } ?>   
+                <div class="col-md-12 pt-3 text-center">
+                    <button class="btn btn-danger submit_button" type="button">
+                        Save Question
+                    </button>
+                </div>
+            </div>
+            <script type="text/javascript" src="include/js/action_changes.js"></script>
+            <script>
+				jQuery('.submit_button').click(function(){
+					SaveModalContent('queries_form', 'product_changes.php', 'product.php');
+				});
+            </script>            
+        </form>        
+        <?php
+    }
+    
+    if(isset($_REQUEST['query_row_index'])){
+        $query_row_index = $_REQUEST['query_row_index'];
+        $selected_query_name = $_REQUEST['selected_query_name']; 
+        ?>
+    
+        <tr class="question_row<?php if (!empty($selected_category_id)) { echo $selected_category_id; } ?>" id="question_row<?php if (!empty($query_row_index)) { echo $query_row_index; } ?>">
+            <td class="text-center sno"><?php if(!empty($query_row_index)) { echo $query_row_index; }?></td>
+            <td class="text-center">
+                <?php
+                    if(!empty($selected_query_name)) { 
+                        echo $selected_query_name; ?>                    
+                    <input type="hidden" name="question_names[]" value="<?php if(!empty($selected_query_name)) { echo $selected_query_name; } ?>">
+                <?php }	?>	
+            </td>		
+            <td class="text-center product_pad">
+                <button class="btn btn-danger align-self-center px-2 py-1" type="button" onclick="Javascript:DeleteQueryRow('<?php if(!empty($query_row_index)) { echo $query_row_index; } ?>');"> <i class="fa fa-trash" aria-hidden="true"></i></button>
+            </td>   
+        </tr>
+      <?php
+    }
+    if(isset($_POST['edit_query_id'])) {
+        $query_name = array(); $query_name_error = ""; $single_lower_case_name = "";
+        $valid_query = ""; $form_name = "queries_form"; $query_error = $question_error = "";
+        $single_query_name = ""; $prev_query_id = ""; $lower_case_name = array();
+        $product_id = "";
+
+        $edit_id = "";
+        if(isset($_POST['edit_query_id'])) {
+            $edit_id = $_POST['edit_query_id'];
+            $edit_id = trim($edit_id);
+        }
+        if(isset($_POST['product_id'])) {
+            $product_id = $_POST['product_id'];
+            $product_id = trim($product_id);
+        }        
+        if(!empty($edit_id)) {
+            if(isset($_POST['question_name'])) {
+                $single_query_name = $_POST['question_name'];
+                $single_query_name = trim($single_query_name);
+                if(!preg_match("/^(?=.*[a-zA-Z])[^?!<>$+=`~_|?;^{}]*$/", $single_query_name)) {
+                    $query_name_error = "Invalid Query name";
+                }
+            }
+            if(!empty($query_name_error)) {
+                $valid_query = $valid->error_display($form_name, "question_name", $query_name_error, 'text');
+            }
+            else {
+                $single_lower_case_name = strtolower($single_query_name);
+                $single_query_name = $obj->encode_decode("encrypt", $single_query_name);
+                $single_lower_case_name = $obj->encode_decode("encrypt", $single_lower_case_name);
+                if(!empty($single_lower_case_name)) {
+                    $prev_query_id = $obj->CheckQueryAlreadyExists($bill_company_id, $single_lower_case_name,$product_id);
+                    if(!empty($prev_query_id)) {
+                        if($prev_query_id != $edit_id) {
+                            $query_error = "This Query name - " . $obj->encode_decode("decrypt", $single_lower_case_name) . " is already exist";
+                        }
+                    }
+                }
+            }
+        }
+
+        if(empty($edit_id)) {
+            if(isset($_POST['question_names'])) {
+                $query_name = $_POST['question_names'];
+            }
+            $inputbox_query_name = "";
+            $inputbox_query_name = $_POST['question_name'];
+
+            if(!empty($inputbox_query_name) && empty($query_name)) {
+                $query_add_error = "Click Add Button to Append Query";
+                if(!empty($query_add_error)) {
+                    $valid_query = $valid->error_display($form_name, "question_name", $query_add_error, 'text');
+                }
+            } else if(empty($inputbox_query_name) && empty($query_name)) {
+                $query_add_error = "Enter Query Name";
+                if(!empty($query_add_error)) {
+                    $valid_query = $valid->error_display($form_name, "question_name", $query_add_error, 'text');
+                }
+            } else if(!empty($inputbox_query_name)) {
+                $query_add_error = "Click Add Button to Append Question";
+                if(!empty($query_add_error)) {
+                    $valid_query = $valid->error_display($form_name, "question_name", $query_add_error, 'text');
+                }
+            }
+            if(!empty($query_name)) {
+                for ($p = 0; $p < count($query_name); $p++) {
+                    if(!preg_match("/^(?=.*[a-zA-Z])[^?!<>$+=`~_|?;^{}]*$/", $query_name[$p])) {
+                        $query_name_error = "Invalid Query name - " . $query_name[$p];
+                    }
+                    // else {
+                    //     $lower_case_name[$p] = strtolower($query_name[$p]);
+                    //     $query_name[$p] = $obj->encode_decode('encrypt', $query_name[$p]);
+                    //     $lower_case_name[$p] = $obj->encode_decode('encrypt', $lower_case_name[$p]);
+                    // }
+
+                    if(!empty($query_name_error)) {
+                        if(!empty($valid_query)) {
+                            $valid_query = $valid_query." ".$valid->error_display($form_name, "question_name", $query_name_error, 'text');
+                        }
+                        else {
+                            $valid_query = $valid->error_display($form_name, "question_name", $query_name_error, 'text');
+                        }
+                    }
+                }
+            }
+        }
+
+		$result = "";
+            if(empty($valid_query)){
+                $bill_company_id = $GLOBALS['bill_company_id'];
+                $check_user_id_ip_address = 0;
+                $check_user_id_ip_address = $obj->check_user_id_ip_address();	
+                if(preg_match("/^\d+$/", $check_user_id_ip_address)) {
+                    $lower_case_name = array();
+                    for($p = 0; $p < count($query_name); $p++) {
+                        if(!empty($query_name[$p])) {
+                            $lower_case_name[$p] = strtolower($query_name[$p]);
+                            $query_name[$p] = $obj->encode_decode('encrypt', $query_name[$p]);
+                            $lower_case_name[$p] = $obj->encode_decode('encrypt', $lower_case_name[$p]);
+                            $prev_query_id = ""; 
+                            if(!empty($lower_case_name[$p]) && !empty($bill_company_id)) {
+                                $prev_query_id = $obj->CheckQueryAlreadyExists($bill_company_id, $lower_case_name[$p],$product_id);
+                                if(!empty($prev_query_id)) {
+                                    $question_error = "Question - ".$obj->encode_decode("decrypt", $lower_case_name[$p])." is already exists";
+                                    break;
+                                }
+                            }
+                        }
+                    }
+               
+                    $created_date_time = $GLOBALS['create_date_time_label']; $creator = $GLOBALS['creator'];
+                    $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
+                    if(empty($edit_id)) { 
+                        for($p = 0; $p < count($query_name); $p++) { 
+                            if(empty($prev_query_id) && (empty($question_error))) {						
+                                $action = array();
+                                if(!empty($query_name[$p])) {
+                                    $action = "New Query Created. Name - ".$obj->encode_decode('decrypt', $query_name[$p]);
+                                }
+    
+                                $null_value = $GLOBALS['null_value'];
+                                $columns = array('created_date_time', 'creator', 'creator_name', 'bill_company_id', 'query_id','product_id', 'question', 'lower_case_name', 'deleted');
+                                $values = array("'".$created_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$bill_company_id."'", "'".$null_value."'","'".$product_id."'", "'".$query_name[$p]."'", "'".$lower_case_name[$p]."'", "'0'");
+                                $query_insert_id = $obj->InsertSQL($GLOBALS['product_query_table'], $columns, $values,'query_id','', $action[$p]);						
+                                if(preg_match("/^\d+$/", $query_insert_id)) {
+                                    $query_id = $obj->getTableColumnValue($GLOBALS['product_query_table'], 'id', $query_insert_id, 'query_id');
+                                    $update_query_id = $query_id;	
+                                    $result = array('number' => '1', 'msg' => 'Question Successfully Created');					
+                                }
+                                else {
+                                    $result = array('number' => '2', 'msg' => $query_insert_id);
+                                }
+                            }
+                            else {
+                                $result = array('number' => '2', 'msg' => $question_error);
+                            }
+                        }
+                    } 
+                    else if(!empty($edit_id) && (empty($question_error))) {
+                        $getUniqueID = "";
+                        $getUniqueID = $obj->getTableColumnValue($GLOBALS['product_query_table'], 'query_id', $edit_id, 'id');
+                        if(preg_match("/^\d+$/", $getUniqueID)) {
+                            $action = "";
+                            if(!empty($single_query_name)) {
+                                $action = "Question Updated. Name - ".$obj->encode_decode('decrypt', $single_query_name);
+                                
+                            }
+                            $creator_name = $obj->encode_decode('encrypt', $GLOBALS['creator_name']);
+                        
+                            $columns = array(); $values = array();						
+                            $columns = array('creator_name', 'question', 'lower_case_name');
+                            $values = array("'".$creator_name."'","'".$single_query_name."'", "'".$single_lower_case_name."'");
+                            $question_update_id = $obj->UpdateSQL($GLOBALS['product_query_table'], $getUniqueID, $columns, $values, $action);
+                            if(preg_match("/^\d+$/", $question_update_id)) {
+                                $result = array('number' => '1', 'msg' => 'Updated Successfully');						
+                            }
+                            else {
+                                $result = array('number' => '2', 'msg' => $question_update_id);
+                            }							
+                        }
+                    }
+                    else {
+                        $result = array('number' => '2', 'msg' => $question_error);
+                    }
+    
+                }
+                else {
+                    $result = array('number' => '2', 'msg' => 'Invalid IP');
+                }
+            }
+            else {
+                if(!empty($valid_query)) {
+                    $result = array('number' => '3', 'msg' => $valid_query);
+                }
+            }
+        
+        if(!empty($result)) {
+            $result = json_encode($result);
+        }
+        echo $result; exit;
+    }
+    if(isset($_REQUEST['load_queries'])){
+        $product_id = $_REQUEST['product_id'];
+        $query_list = array();
+        $query_list = $obj->getTableRecords($GLOBALS['product_query_table'], 'product_id', $product_id,'');
+        if(!empty($query_list)) {
+            $index = 1;
+            foreach($query_list as $data) {
+                $question = $obj->encode_decode('decrypt', $data['question']);
+                ?>
+                <tr>
+                    <td><?php echo $index; ?></td>
+                    <td><?php echo $question; ?></td>
+                    <td>
+                        <a class="pe-2" href="Javascript:ShowQueriesPage('<?php if(!empty($data['query_id'])) { echo $data['query_id']; } ?>');"><i class="fa fa-pencil text-primary"></i></a>                        
+                        <a class="pe-2" href="Javascript:DeleteQueryModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '<?php if(!empty($data['query_id'])) { echo $data['query_id']; } ?>');"><i class="fa fa-trash text-danger"></i></a>
+                    </td>
+                </tr>
+                <?php
+                $index++;
+            }
+        }else{
+            ?>
+            <tr>
+                <td colspan="3" class="text-center">No Queries Found</td>
+            </tr>
+            <?php
+        }
+    }
+	if(isset($_REQUEST['delete_product_id'])) {
+		$delete_product_id = $_REQUEST['delete_product_id'];
+		$msg = "";
+		if(!empty($delete_product_id)) {
+
+			$product_rows = 0; $product_list = array();
+			// $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'category_id', $delete_category_id);
+			// if(!empty($product_list)) {
+			// 	$product_rows = count($product_list);
+			// }
+
+			if(empty($product_rows)) {
+				$product_unique_id = "";
+				$product_unique_id = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $delete_product_id, 'id');
+				if(preg_match("/^\d+$/", $product_unique_id)) {
+					$name = "";
+					$name = $obj->getTableColumnValue($GLOBALS['product_table'], 'product_id', $delete_product_id, 'name');
+
+					$action = "";
+					if(!empty($name)) {
+						$action = "Product Deleted. Name - ".$obj->encode_decode('decrypt', $name);
+					}
+				
+					$columns = array(); $values = array();						
+					$columns = array('deleted');
+					$values = array("'1'");
+					$msg = $obj->UpdateSQL($GLOBALS['product_table'], $product_unique_id, $columns, $values, $action);
+				}
+			}
+			else {
+				$msg = "Unable to Delete";
+			}
+		}
+		echo $msg;
+		exit;	
+	}        
+	if(isset($_REQUEST['delete_query_id'])) {
+		$delete_query_id = $_REQUEST['delete_query_id'];
+		$msg = "";
+		if(!empty($delete_query_id)) {
+
+			$product_rows = 0; $product_list = array();
+			// $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'category_id', $delete_category_id);
+			// if(!empty($product_list)) {
+			// 	$product_rows = count($product_list);
+			// }
+
+			if(empty($product_rows)) {
+				$query_unique_id = "";
+				$query_unique_id = $obj->getTableColumnValue($GLOBALS['product_query_table'], 'query_id', $delete_query_id, 'id');
+				if(preg_match("/^\d+$/", $query_unique_id)) {
+					$name = "";
+					$name = $obj->getTableColumnValue($GLOBALS['product_query_table'], 'query_id', $delete_query_id, 'question');
+
+					$action = "";
+					if(!empty($name)) {
+						$action = "Question Deleted. Name - ".$obj->encode_decode('decrypt', $name);
+					}
+				
+					$columns = array(); $values = array();						
+					$columns = array('deleted');
+					$values = array("'1'");
+					$msg = $obj->UpdateSQL($GLOBALS['product_query_table'], $query_unique_id, $columns, $values, $action);
+				}
+			}
+			else {
+				$msg = "Unable to Delete";
+			}
+		}
+		echo $msg;
+		exit;	
+	}            
+    
+        ?>

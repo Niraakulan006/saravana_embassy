@@ -1,5 +1,6 @@
 <?php
     include("include_files.php");
+    include("user_validation.php");
 
     if(isset($_POST['banner_position_name'])) {
         $banner_name = array(); $image_upload = 0; $banner_position_error = ""; $banner_position = array(); $image_position_upload = 0;

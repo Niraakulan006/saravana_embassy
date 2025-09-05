@@ -287,7 +287,17 @@
 				if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_mobile_number']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_mobile_number'])) {
 					$creator_mobile_number = $this->encode_decode('encrypt', $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_mobile_number']);
 				}
-				$log_backup_file = $GLOBALS['log_backup_file'];
+				$actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+				$log_backup_file = "";				
+				// $log_backup_file = $GLOBALS['log_backup_file'];
+				if(empty($log_backup_file)) {
+					$log_backup_file = $GLOBALS['log_backup_file'];
+				}
+				if(!empty($log_backup_file)) {
+					if (!empty($GLOBALS['admin_folder_name']) && strpos($actual_link, $GLOBALS['admin_folder_name']) == false) {
+						$log_backup_file = $GLOBALS['admin_folder_name']."/".$log_backup_file;
+					}
+				}				
 	
 				$columns = array('type', 'created_date_time', 'creator', 'creator_name', 'creator_mobile_number', 'log_table', 'log_table_unique_id', 'action', 'query');	
 				$values = array("'".$creator_type."'", "'".$create_date_time."'", "'".$creator."'", "'".$creator_name."'", "'".$creator_mobile_number."'", "'".$table."'", "'".$table_unique_id."'", "'".$action."'", "'".$query."'");			

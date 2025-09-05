@@ -133,3 +133,87 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="queriesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header border-bottom pb-3">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Product Queries</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-group">
+                    <div class="form-label-group in-border">
+                        <div class="input-group">
+                            <input type="text" id="" name="" class="form-control shadow-none d-none" onkeydown="Javascript:KeyboardControls(this,'text',25,1);" placeholder="" required="">
+                            <input type="hidden" name="query_product_id" id="query_product_id">
+                            <label>Product Question</label>
+                            <div class="input-group-append">
+                                <button class="btn btn-danger" type="button" onclick="ShowQueriesPage()"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8 mt-3">
+                <div class="table-responsive text-center">
+                    <table class="table nowrap cursor smallfnt w-100 table-bordered list_query_table">
+                        <thead class="bg-dark smallfnt">
+                            <tr style="white-space:pre;">
+                                <th>#</th>
+                                <th>Question</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product_queries">
+                            <tr class="d-none">
+                                <td>01</td>
+                                <td>Question 01</td>
+                                <td><a class="pe-2" href="#"><i class="fa fa-trash text-danger"></i></a></td>
+                            </tr>
+                        </tbody> 
+                    </table>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<button type="button" data-bs-toggle="modal" data-bs-target="#DeleteModalQuery" class="d-none delete_query_modal_button"></button>
+<!-- The Modal -->
+<div class="modal fade" id="DeleteModalQuery" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title h5">Delete</h1>
+                <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure want to delete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success no" onClick="Javascript:cancel_delete_modal(this);" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger yes" onClick="Javascript:confirm_delete_query_modal(this);" >Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" data-bs-toggle="modal" data-bs-target="#EstimateQueriesModal" class="d-none queries_modal_button"></button>
+<!-- The Modal -->
+<div class="modal fade" id="EstimateQueriesModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header border-bottom pb-3">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Product Queries</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>

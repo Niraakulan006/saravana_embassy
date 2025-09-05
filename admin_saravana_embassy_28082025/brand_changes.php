@@ -69,7 +69,7 @@
                                             <img id="brand_image_preview" src="images/cloudupload.png" style="max-width: 150px;" />
                                         <?php } ?>
                                     </div>
-                                    <div class="text-center smallfnt">(Brand Image Size 1000 x 1000)</div>
+                                    <div class="text-center smallfnt">(Brand Image Size 140 x 60)</div>
                                     <div class="text-center smallfnt">(Upload jpg, Png Format Less than 2MB)</div>
                                 </div>
                                 <input type="file" name="brand_image" id="brand_image" style="display: none;" accept="image/*" />
@@ -429,7 +429,7 @@
                     $action = "Brand Deleted. Name - " . $obj->encode_decode('decrypt', $brand_name);
                 }
                 $linked_count = 0;
-                // $linked_count = $obj->GetbrandLinkedCount($delete_brand_id);
+                $linked_count = $obj->getTableColumnValue($GLOBALS['product_table'], 'brand_id', $delete_brand_id, 'id');
                 if(empty($linked_count)) {
                     $columns = array();
                     $values = array();

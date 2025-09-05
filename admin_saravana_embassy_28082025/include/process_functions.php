@@ -196,6 +196,24 @@
 			}
 
 			return $price;
-		}					
+		}	
+		public function CheckQueryAlreadyExists($bill_company_id, $question, $product_id) {
+			$list = array(); $select_query = ""; $query_id = "";
+			if(!empty($bill_company_id) && !empty($question) && !empty($product_id)) {
+				$select_query = "SELECT query_id FROM ".$GLOBALS['product_query_table']." WHERE lower_case_name = '".$question."' AND product_id = '".$product_id."' AND deleted = '0'";	
+			}
+			// echo $select_query;
+			if(!empty($select_query)) {
+				$list = $this->getQueryRecords($GLOBALS['product_query_table'], $select_query);
+				if(!empty($list)) {
+					foreach($list as $data) {
+						if(!empty($data['query_id'])) {
+							$query_id = $data['query_id'];
+						}
+					}
+				}
+			}
+			return $query_id;
+		}						
     }
 ?>

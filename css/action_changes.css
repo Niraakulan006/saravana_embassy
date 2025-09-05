@@ -1,0 +1,11 @@
+span.infos {
+    font-size: 12px;
+    line-height: 15px;
+    display: inline-block;
+    color: #d93025;
+    background-color: #faede7;
+    border: 1px solid #d87575;
+    padding: 4px;
+    font-weight: bold;
+    margin: 2px;
+}

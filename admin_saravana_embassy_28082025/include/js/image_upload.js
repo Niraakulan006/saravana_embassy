@@ -296,7 +296,7 @@ function multiple_upload_files(obj, field, cropper) {
 
 	var idxDot = fileName.name.lastIndexOf(".") + 1;
 	var extFile = fileName.name.substr(idxDot, fileName.name.length).toLowerCase();
-	if(extFile=="jpg" || extFile=="jpeg" || extFile=="png") {
+	if(extFile=="jpg" || extFile=="jpeg" || extFile=="png" || extFile=="webp") {
 		var image_size = fileName.size;
 		if(image_size < 2000000) {
 			var width = ""; var height = "";		
@@ -323,7 +323,7 @@ function multiple_upload_files(obj, field, cropper) {
 						// alert("width:"+width+" height:"+height);
 						if(parseInt(image_count) <= 5) {
 
-							if(this.width == 800 && this.height == 800) {
+							if(this.width == 600 && this.height == 600) {
 								jQuery("#"+field+"_view").fadeIn("fast").attr('src',event.target.result);
 								var image_url = event.target.result;
 								var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});			
@@ -376,7 +376,8 @@ function upload_files(obj, field) {
 				
 	var idxDot = fileName.name.lastIndexOf(".") + 1;
 	var extFile = fileName.name.substr(idxDot, fileName.name.length).toLowerCase();
-	if(extFile=="jpg" || extFile=="jpeg" || extFile=="png" || extFile=="gif") {
+	console.log(extFile);
+	if(extFile=="jpg" || extFile=="jpeg" || extFile=="png" || extFile=="webp") {
 		var image_size = fileName.size;
 		if(image_size < 2000000) {
 			var width = ""; var height = "";		
@@ -388,7 +389,7 @@ function upload_files(obj, field) {
 				image.onload = function() {
                     if(field == "logo" || field == "brand_image" || field == "order_delivery_image") {
 						if (field == 'brand_image') {
-							if (this.width == 1000 && this.height == 1000) {
+							if (this.width == 140 && this.height == 60) {
 								jQuery("#" + field + "_preview").fadeIn("fast").attr('src', event.target.result);
 								var image_url = event.target.result;
 								var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: { "image_url": image_url, "image_type": image_type, "field": field } });
@@ -416,7 +417,7 @@ function upload_files(obj, field) {
                     }
 					else if(field == "category_cover_image" || field == "advertisement_cover_image" || field == "blog_cover_image") {
                         // if(this.width == 800 && this.height == 345) {
-                        if(this.width == 1300 && this.height == 300) {                        
+                        if(this.width == 1000 && this.height == 1000) {
                             jQuery("#"+field+"_preview").fadeIn("fast").attr('src',event.target.result);
                             var image_url = event.target.result;
                             var request = jQuery.ajax({ url: "image_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});							
@@ -580,25 +581,11 @@ function upload_files(obj, field) {
 		}
 		
 	}
-	else if(extFile=="pdf") {
-		var width = ""; var height = "";		
-		var reader = new FileReader();				
-		reader.readAsDataURL(fileName);					
-		reader.onload = function(event) {
-			jQuery("#"+field+"_preview").fadeIn("fast").attr('src',event.target.result);
-			var image_url = event.target.result;
-			var request = jQuery.ajax({ url: "pdf_upload.php", type: "POST", data: {"image_url" : image_url, "image_type" : image_type, "field" : field}});							
-			request.done(function(result) {
-				var msg = result;
-				jQuery('#'+field+'_cover .cover').html(msg);
-			});
-		}
-	}
 	else {
 		if(jQuery('div.alert').length > 0) {
 			jQuery('div.alert').remove();
 		}
-		jQuery('#'+field+'_cover .cover').before('<div class="alert alert-danger w-100 text-center">Please upload only PNG or JPG Format</div>');
+		jQuery('#'+field+'_cover .cover').before('<div class="alert alert-danger w-100 text-center">Please upload only PNG or JPG or WEBP Format</div>');
 	}
 }
 

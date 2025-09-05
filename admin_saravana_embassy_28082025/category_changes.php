@@ -138,7 +138,7 @@
                 </div>
                 <div class="col-lg-3 col-md-3 col-12 px-lg-1">
 					<div id="category_cover_image_cover" class="form-group">
-                        <h5 class="w-100 text-center">Cover Image Size - 800 x 345</h5> 
+                        <h5 class="w-100 text-center">Cover Image Size - 1000 x 1000</h5> 
                         <h6 class="w-100 text-center">Max.Upload Size - 2 MB</h6> 
                         <div class="image-upload text-center">
                             <label for="category_cover_image">   
@@ -832,9 +832,11 @@
 
 			$product_rows = 0; $product_list = array();
 			// $product_list = $obj->getTableRecords($GLOBALS['product_table'], 'category_id', $delete_category_id);
-			// if(!empty($product_list)) {
-			// 	$product_rows = count($product_list);
-			// }
+			$product_list = $obj->getTableColumnValue($GLOBALS['product_table'], 'category_id', $delete_category_id, 'id');
+			if(!empty($product_list)) {
+				// $product_rows = count($product_list);
+				$product_rows = 1;				
+			}
 
 			if(empty($product_rows)) {
 				$category_unique_id = "";

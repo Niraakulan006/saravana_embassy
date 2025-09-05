@@ -1,5 +1,6 @@
 <?php
     include("include_files.php");
+	include("user_validation.php");
 
     if(isset($_REQUEST['meta_file_name'])) {
         $meta_file_name = trim($_REQUEST['meta_file_name']);

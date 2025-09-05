@@ -28,6 +28,7 @@
 					case 'image/jpg': $extension = "jpg"; $image_upload = 1; break;
 					case 'image/png': $extension = "png"; $image_upload = 1; break;
 					case 'image/gif': $extension = "gif"; $image_upload = 1; break;
+					case 'image/webp': $extension = "webp"; $image_upload = 1; break;
 				}
 			}
 			// $image_name = $image_name.'.'.$extension;
@@ -49,13 +50,14 @@
 						$webp_image = "";
 						if(!empty($image_name) && file_exists($temp_dir.$image_name)) {
 							$folder_image = $temp_dir.$image_name;
-							$extension_list = array('jpg','jpeg','png'); $resolution = 42;
+							$extension_list = array('jpg','jpeg','png','webp'); $resolution = 42;
 							if (in_array($extension, $extension_list)) {
-								if(!empty($image_name) && !empty($extension) && $extension != "webp") {
+								// if(!empty($image_name) && !empty($extension) && $extension != "webp") {
+								if(!empty($image_name) && !empty($extension)) {								
 									$webp_image = str_replace(".".$extension, "", $image_name);
 									$im = ""; $webp_image = $webp_image.$GLOBALS['image_format'];
 									if(!file_exists($temp_dir.$webp_image)) {
-										if($extension == "png" || $extension == "jpg" || $extension == "jpeg") {
+										if($extension == "png" || $extension == "jpg" || $extension == "jpeg" || $extension == "webp") {
 
 											if(!empty($preview_name)) {
 												$convert_webp_image = $webp_image;
@@ -68,7 +70,9 @@
 												else if($extension == "jpg" || $extension == "jpeg") {
 													$original_image = imagecreatefromjpeg($folder_image);
 												}
-
+												else if($extension == "webp") {
+													$original_image = imagecreatefromwebp($folder_image);
+												}
 												$width = 500; $height = 500;
 												if($preview_name == "desktop_home_banner") {
 													$width = 1500; $height = 500;

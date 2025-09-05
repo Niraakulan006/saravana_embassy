@@ -112,60 +112,8 @@
 <?php include "footer.php"; ?>
 <script type="text/javascript" src="include/js/image_upload.js"></script>
 <script type="text/javascript" src="include/js/action_changes.js"></script>            
-
+<?php include('modal_content.php'); ?>
 <!-- Modal -->
-<div class="modal fade" id="queriesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header border-bottom pb-3">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Product Queries</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="form-group">
-                    <div class="form-label-group in-border">
-                        <div class="input-group">
-                            <input type="text" id="" name="" class="form-control shadow-none" onkeydown="Javascript:KeyboardControls(this,'text',25,1);" placeholder="" required="">
-                            <label>Product Question</label>
-                            <div class="input-group-append">
-                                <button class="btn btn-danger" type="button"><i class="fa fa-plus" aria-hidden="true"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-8 mt-3">
-                <div class="table-responsive text-center">
-                    <table class="table nowrap cursor smallfnt w-100 table-bordered">
-                        <thead class="bg-dark smallfnt">
-                            <tr style="white-space:pre;">
-                                <th>#</th>
-                                <th>Question</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>01</td>
-                                <td>Question 01</td>
-                                <td><a class="pe-2" href="#"><i class="fa fa-trash text-danger"></i></a></td>
-                            </tr>
-                        </tbody> 
-                    </table>
-                </div>
-            </div>
-            <div class="col-md-12 pt-3 text-center">
-                <button class="btn btn-danger" type="button">
-                    Submit
-                </button>
-            </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 <script>
     $(document).ready(function(){
         $("#product").addClass("active");

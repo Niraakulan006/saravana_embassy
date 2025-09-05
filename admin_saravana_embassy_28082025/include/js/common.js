@@ -364,6 +364,7 @@ function SaveModalContent(form_name, post_send_file, redirection_file) {
 		jQuery.ajax({
 			url: post_url, success: function (check_login_session) {
 				if (check_login_session == 1) {
+					console.log('if');
 					SendModalContent(form_name, post_send_file, redirection_file);
 					// window.location.reload();
 				}
@@ -391,7 +392,7 @@ function SendModalContent(form_name, post_send_file, redirection_file) {
 		dataType: 'html',
 		contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
 		success: function (data) {
-			//console.log(data);
+			console.log(data);
 			try {
 				var x = JSON.parse(data);
 			} catch (e) {
@@ -624,9 +625,14 @@ function GetMetaTagsFile(file_value) {
 		var post_url = "meta_tags_changes.php?meta_file_name="+file_value;
 		jQuery.ajax({
 			url: post_url, success: function (result) {
-				if(jQuery('.separate_row').length > 0) {
-					jQuery('.separate_row').html('');
-					jQuery('.separate_row').html(result);
+				if(result == "invalid_user") {
+					window.location.reload();
+				}
+				else {
+					if(jQuery('.separate_row').length > 0) {
+						jQuery('.separate_row').html('');
+						jQuery('.separate_row').html(result);
+					}
 				}
 			}
 		});
@@ -695,7 +701,10 @@ function delete_banner_image(obj) {
 	var post_url = "banner_changes.php?delete_banner_image="+banner_name+"&delete_position_name="+position_name;
 	jQuery.ajax({
 		url: post_url, success: function (data) {
-			if(data != "") {
+			if(data == "invalid_user") {
+				window.location.reload();
+			}
+			else if(data != "") {
 				if(jQuery('#DeleteBannerModal').find('.btn-close').length > 0) {
 					jQuery('#DeleteBannerModal').find('.btn-close').trigger('click');
 				}
@@ -731,4 +740,20 @@ function checkisTechnician() {
 	if (jQuery('input[name="is_technician"]').length > 0) {
 		jQuery('input[name="is_technician"]').val(is_technician);
 	}
+}
+function OnOffButton(field_name){
+    var checkbox_button = document.getElementById(field_name).checked;
+    
+    if(checkbox_button == true){
+        document.getElementById(field_name).value = 1;
+		if(field_name == 'gst_option') {
+			GetTaxType('1');
+		}
+    }
+    else if(checkbox_button == false){
+        document.getElementById(field_name).value = 0;
+		if(field_name == 'gst_option') {
+			GetTaxType('0');
+		}
+    }
 }

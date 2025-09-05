@@ -305,3 +305,266 @@ function calTotal() {
 		}
 	}
 }
+
+function ShowQueriesPage(query_id) {
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";	
+    jQuery.ajax({url: post_url, success: function(check_login_session){
+        if(check_login_session == 1) {	
+
+            var page_title = ""; var post_send_file  = ""; var product_id="";
+            if(jQuery('input[name="page_title"]').length > 0) {
+                page_title = jQuery('input[name="page_title"]').val();
+                if(typeof page_title != "undefined" && page_title != "") {
+                    page_title = page_title.replaceAll(" ", "_");
+                    page_title = page_title.toLowerCase();
+                    page_title = jQuery.trim(page_title);
+                    post_send_file = page_title+"_changes.php";
+                }
+            }
+            if (jQuery('#table_records_cover').length > 0) {
+                jQuery('#table_records_cover').addClass('d-none');
+            }
+            if (jQuery('#add_update_form_content').length > 0) {
+                jQuery('#add_update_form_content').removeClass('d-none');
+            }
+            if (jQuery('#query_product_id').length > 0) {
+                product_id = $('#query_product_id').val();
+            }			
+			console.log(product_id);
+			var post_url = post_send_file+"?show_queries_page="+query_id+"&product_id="+product_id;
+			console.log(post_url);
+            jQuery.ajax({url: post_url, success: function(result){
+                if(jQuery('.add_update_form_content').length > 0) {
+					$('#queriesModal').modal('hide');
+                    jQuery('.add_update_form_content').html("");
+                    jQuery('.add_update_form_content').html(result);
+                }
+                jQuery('html, body').animate({
+                    scrollTop: (jQuery('.add_update_form_content').parent().parent().offset().top)
+                }, 500);                
+            }});
+        }
+        else {
+            window.location.reload();
+        }
+    }});
+}
+
+function addQueries(){
+    var check_login_session = 1; var all_errors_check = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+            if (check_login_session == 1) {
+                if (jQuery('.infos').length > 0) {
+                    jQuery('.infos').each(function () { jQuery(this).remove(); });
+                }
+                var all_errors_check = 1;
+                var regex = /^[a-zA-Z0-9 ]+$/;
+
+                var question_name = ""; var validation_check = 1;
+                if (jQuery('input[name="question_name"]').is(":visible")) {
+                    if (jQuery('input[name="question_name"]').length > 0) {
+                        question_name = jQuery('input[name="question_name"]').val();
+                        if (typeof question_name != "undefined" && question_name != "") {
+
+                        } else {
+                            all_errors_check = 0;
+                        }
+
+                    }
+                }
+                if (all_errors_check == 1) {
+                    if (validation_check == 1) {
+
+                        var add = 1;
+                        if (question_name != "") {
+                            if (jQuery('input[name="question_name[]"]').length > 0) {
+                                // var $table = jQuery('.added_subcategory_table tbody');
+                                // console.log($table);
+                                jQuery('.added_query_table tbody').find('.question_row' + category_id).each(function () {
+
+                                    var prev_attribute_name = jQuery(this).find('input[name="question_names[]"]').val();
+                                    var lower_prev_attribute_name = prev_attribute_name.toLowerCase();
+                                    var lower_prev_attribute_name = lower_prev_attribute_name.trim();
+
+                                    var lower_attribute_name = attribute_name.toLowerCase();
+                                    var lower_attribute_name = lower_attribute_name.trim();
+
+                                    if (lower_prev_attribute_name == lower_attribute_name) {
+                                        add = 0;
+                                    }
+                                });
+                            }
+                        }
+
+                        if (add == 1) {
+                            var question_count = jQuery('input[name="question_count"]').val();
+                            question_count = parseInt(question_count) + 1;
+                            jQuery('input[name="question_count"]').val(question_count);
+
+                            var post_url = "product_changes.php?query_row_index=" + question_count + "&selected_query_name=" + encodeURIComponent(question_name);
+
+                            jQuery.ajax({
+                                url: post_url, success: function (result) {
+
+                                    if (jQuery('.added_query_table tbody').find('tr').length > 0) {
+                                        jQuery('.added_query_table tbody').find('tr:first').before(result);
+                                    }
+                                    else {
+                                        jQuery('.added_query_table tbody').append(result);
+                                    }
+                                    SnoCalculation()
+
+                                    if (jQuery('input[name="question_name"]').length > 0) {
+                                        jQuery('input[name="question_name"]').val('');
+										jQuery('input[name="question_name"]').focus();
+                                    }
+
+                                }
+                            });
+                        }
+                        else {
+                            jQuery('.added_query_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">This Question already exists for this product</span>');
+
+                            if (jQuery('.add_details_buttton').length > 0) {
+                                jQuery('.add_details_buttton').attr('disabled', false);
+                            }
+                        }
+                    } else {
+                        jQuery('.added_query_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">Invalid Question</span>');
+                        jQuery('input[name="attribute_value"]').val('');
+                    }
+                }
+                else {
+                    jQuery('.added_query_table').before('<span class="infos w-100 text-center mb-3" style="font-size: 15px;">Please check all field values</span>');
+                    if (jQuery('.add_details_buttton').length > 0) {
+                        jQuery('.add_details_buttton').attr('disabled', false);
+                    }
+                }
+            }
+            else {
+                window.location.reload();
+            }
+        }
+    });
+}
+function DeleteQueryRow(row_index) {
+    var check_login_session = 1;
+    var post_url = "dashboard_changes.php?check_login_session=1";
+    jQuery.ajax({
+        url: post_url, success: function (check_login_session) {
+
+            if (check_login_session == 1) {
+                if (jQuery('#question_row' + row_index).length > 0) {
+                    jQuery('#question_row' + row_index).remove();
+                }
+                SnoCalculation()
+            }
+            else {
+                window.location.reload();
+            }
+        }
+    });
+}
+
+function SnoCalculation() {
+    if (jQuery('.sno').length > 0) {
+        var row_count = 0;
+        row_count = jQuery('.sno').length;
+        if (typeof row_count != "undefined" && row_count != null && row_count != 0 && row_count != "") {
+            var j = 1;
+            var sno = document.getElementsByClassName('sno');
+            for (var i = row_count - 1; i >= 0; i--) {
+                sno[i].innerHTML = j;
+                j = parseInt(j) + 1;
+            }
+        }
+    }
+}
+
+function loadQueries(product_id) {
+    var post_url = "product_changes.php?load_queries=1&product_id=" + product_id;
+    jQuery.ajax({
+        url: post_url, success: function (result) {
+            if (result) {
+                jQuery('.list_query_table tbody').html(result);
+            }
+        }
+    });
+}
+
+function DeleteQueryModalContent(page_title, delete_content_id) {
+	var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+				if (typeof page_title != "undefined" && page_title != "") {
+					jQuery('#DeleteModalQuery .modal-header').find('h4').html("");
+					jQuery('#DeleteModalQuery .modal-header').find('h4').html("Delete " + page_title);
+					page_title = page_title.toLowerCase();
+				}
+				jQuery('.delete_query_modal_button').trigger("click");
+				$('#DeleteModalQuery').modal('show');
+				jQuery('#DeleteModalQuery .modal-body').html('');
+                jQuery('#DeleteModalQuery .modal-body').html('Are you surely want to delete this ' + page_title + '?');
+				jQuery('#DeleteModalQuery .modal-footer .yes').attr('id', delete_content_id);
+				jQuery('#DeleteModalQuery .modal-footer .no').attr('id', delete_content_id);
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}
+
+function confirm_delete_query_modal(obj) {
+	var check_login_session = 1;
+	var post_url = "dashboard_changes.php?check_login_session=1";
+	jQuery.ajax({
+		url: post_url, success: function (check_login_session) {
+			if (check_login_session == 1) {
+
+				if (jQuery('#DeleteModalQuery .modal-body').find('.infos').length > 0) {
+					jQuery('#DeleteModalQuery .modal-body').find('.infos').remove();
+				}
+
+				var page_title = ""; var post_send_file = "";
+				if (jQuery('input[name="page_title"]').length > 0) {
+					page_title = jQuery('input[name="page_title"]').val();
+					if (typeof page_title != "undefined" && page_title != "") {
+						page_title = page_title.replace(" ", "_");
+						page_title = page_title.toLowerCase();
+						page_title = jQuery.trim(page_title);
+						post_send_file = page_title + "_changes.php";
+					}
+				}
+				var delete_content_id = jQuery(obj).attr('id');
+					var post_url = post_send_file + "?delete_query_id=" + delete_content_id;
+					jQuery.ajax({
+						url: post_url, success: function (result) {
+							jQuery('#DeleteModalQuery .modal-content').animate({ scrollTop: 0 }, 500);
+
+							var intRegex = /^\d+$/;
+							if (intRegex.test(result) == true) {
+                                jQuery('#DeleteModalQuery .modal-body').append('<div class="alert alert-success"> <button type="button" class="close" data-dismiss="alert">&times;</button> Successfully Delete the ' + page_title.replace("_", " ") + ' </div>');
+								setTimeout(function () {
+									jQuery('#DeleteModalQuery .modal-header .close').trigger("click");
+									window.location.reload();
+								}, 1000);
+
+							}
+							else {
+								jQuery('#DeleteModalQuery .modal-body').append('<span class="infos w-100 text-center" style="font-size: 15px; font-weight: bold;">' + result + '</span>');
+							}
+						}
+					});
+			}
+			else {
+				window.location.reload();
+			}
+		}
+	});
+}

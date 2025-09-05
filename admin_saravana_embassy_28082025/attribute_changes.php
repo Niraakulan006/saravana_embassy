@@ -658,16 +658,20 @@ if(isset($_REQUEST['delete_attribute_id'])) {
                     $action = "Attribute Deleted. Name - ".$obj->encode_decode('decrypt', $attribute_name);
                 }
 
-                $attribute_list = array();
+                $attribute_list = 0;
+    			$attribute_list = $obj->getTableColumnValue($GLOBALS['product_combination_table'], 'attribute_id', $delete_attribute_id, 'id');
+
 				// $attribute_list = $obj->checkattribute($delete_attribute_id);
 
 				$delete = 1;
-				foreach($attribute_list as $data){
-					if($data['id_count'] > 0){
-						$delete = 0;
-					}
-				}
-            
+				// foreach($attribute_list as $data){
+				// 	if($data['id_count'] > 0){
+				// 		$delete = 0;
+				// 	}
+				// }
+                if(!empty($attribute_list)) {
+                    $delete = 0;				
+                }            
                 if($delete == 1){
                     $columns = array(); $values = array();						
                     $columns = array('deleted');

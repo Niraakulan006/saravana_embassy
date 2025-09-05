@@ -2,7 +2,9 @@
 	include("basic_functions.php");
 	include("process_functions.php");
 	include("creation_functions.php");
-
+	include("frontend_functions.php");
+	include("user_functions.php");
+	
 	class billing extends Basic_Functions {
 		public function getProjectTitle() {
 			$string = parent::getProjectTitle();
@@ -179,6 +181,13 @@
 			$list = $process_obj->getAttributeQuantity($product_id,$attribute_value_id,$quantity,$type);
 			return $list;
 		}		
+		public function CheckQueryAlreadyExists($bill_company_id, $question, $product_id) {
+			$process_obj = "";
+			$process_obj = $this->process_functions_object();
+			$attribute_id = "";
+			$attribute_id = $process_obj->CheckQueryAlreadyExists($bill_company_id, $question,$product_id);
+			return $attribute_id;
+		}		
 		public function creation_function_object() {
 			$create_obj = "";		
 			$create_obj = new Creation_functions();
@@ -253,6 +262,48 @@
 			$list = $create_obj->CheckUserNoAlreadyExists($mobile_number);
 			return $list;
 		}
+		public function getProductAttribute($product_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getProductAttribute($product_id);
+			return $list;
+		}
+		public function getProductAttributeValue($product_id, $attribute_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getProductAttributeValue($product_id, $attribute_id);
+			return $list;
+		}
+		public function getDefaultAttributeValue($product_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getDefaultAttributeValue($product_id);
+			return $list;
+		}
+		public function getDefaultCombinationPrice($product_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getDefaultCombinationPrice($product_id);
+			return $list;
+		}
+		public function getProductCombinationRate($product_id, $attribute_id, $attribute_value_id) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getProductCombinationRate($product_id, $attribute_id, $attribute_value_id);
+			return $list;
+		}
+		public function getEstimateList($row, $rowperpage, $searchValue, $from_date, $to_date, $customer_id, $state_id, $district_id, $cancelled, $is_invoiced, $order_column, $order_direction) {
+			$create_obj = "";
+			$create_obj = $this->creation_function_object();
+			$list = array();
+			$list = $create_obj->getEstimateList($row, $rowperpage, $searchValue, $from_date, $to_date, $customer_id, $state_id, $district_id, $cancelled, $is_invoiced, $order_column, $order_direction);
+			return $list;
+		}
 
 		public function getUserList() {
 			$list = array();
@@ -265,5 +316,63 @@
 			$list = parent::CompanyCount();
 			return $list;
 		}		
+		public function frontend_functions_object() {
+			$frontend_obj = "";		
+			$frontend_obj = new Frontend_Functions();
+			return $frontend_obj;
+		}		
+        public function getCategoryWithNoSubCategoryFront() {
+			$frontend_obj = "";
+			$frontend_obj = $this->frontend_functions_object();
+
+			$list = array();
+			$list = $frontend_obj->getCategoryWithNoSubCategoryFront();
+			return $list;
+		}	
+		public function getOTPNumber() {
+			$frontend_obj = "";
+			$frontend_obj = $this->frontend_functions_object();
+
+			$otp_number = "";
+			$otp_number = $frontend_obj->getOTPNumber();
+			return $otp_number;
+		}		
+        public function getCategoryFilters($category_id, $frontend) {
+			$frontend_obj = "";
+			$frontend_obj = $this->frontend_functions_object();
+
+			$list = array();
+			$list = $frontend_obj->getCategoryFilters($category_id, $frontend);
+			return $list;
+		}		
+		public function getProductCount($table,$where,$product_attribute_value_id) {
+			$frontend_obj = "";
+			$frontend_obj = $this->frontend_functions_object();
+			$count = 0;
+			$count = $frontend_obj->getProductCount($table,$where,$product_attribute_value_id);
+			return $count;
+		}		
+		public function getProductRecords($table,$category_id,$offset,$limit,$product_attribute_value_id,$sort_by) {
+			$frontend_obj = "";
+			$frontend_obj = $this->frontend_functions_object();
+
+			$list = array();
+			$list = $frontend_obj->getProductRecords($table,$category_id,$offset,$limit,$product_attribute_value_id,$sort_by);
+			return $list;
+		}		
+		public function user_functions_object() {
+			$user_obj = "";		
+			$user_obj = new User_Functions();
+			return $user_obj;
+		}		
+		public function send_email_details($to_emails, $detail, $title) {
+			$user_obj = "";
+			$user_obj = $this->user_functions_object();
+
+			$res = "";
+			$res = $user_obj->send_email_details($to_emails, $detail, $title);
+			return $res;
+		}			
+		
 	}
 ?>

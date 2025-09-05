@@ -2,12 +2,24 @@
 	$page_title = "Estimate";
 	include("include_user_check_and_files.php");
 	$page_number = $GLOBALS['page_number']; $page_limit = $GLOBALS['page_limit'];
+
+    $add_access_error = ""; $view_access_error = "";
+
+    $from_date = date('Y-m-d', strtotime('-30 days')); $to_date = date('Y-m-d');
+    $customer_list = array();
+    $customer_list = $obj->getTableRecords($GLOBALS['customer_table'], '', '');
+    $customer_count = 0;
+    if(!empty($customer_list)) {
+        $customer_count = count($customer_list);
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<title> <?php if(!empty($project_title)) { echo $project_title; } ?> - <?php if(!empty($page_title)) { echo $page_title; } ?> </title>
 	<?php include "link_style_script.php"; ?>
+    <script type="text/javascript" src="include/js/estimate.js"></script>
+    <script type="text/javascript" src="include/js/tax_calculation.js"></script>
 </head>	
 <body>
 <?php include "header.php"; ?>
@@ -21,80 +33,124 @@
                         <div class="border card-box d-none add_update_form_content" id="add_update_form_content" ></div>
                         <div class="border card-box" id="table_records_cover">
                             <div class="card-header align-items-center">
-                                <div class="row justify-content-end p-3">  
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                        <div class="form-group pb-1">
-                                            <div class="form-label-group in-border pb-1">
-                                                <input type="date" class="form-control shadow-none" placeholder="" required="">
+                                <div class="row p-2">   
+                                    <div class="col-lg-2 col-md-4 col-6">
+                                        <div class="form-group mb-0">
+                                            <div class="form-label-group in-border pb-2">
+                                                <input type="date" name="filter_from_date" class="form-control shadow-none" value="<?php if(!empty($from_date)) { echo $from_date; } ?>" onchange="Javascript:checkDateCheck();" placeholder="">
                                                 <label>From Date</label>
                                             </div>
-                                        </div> 
+                                        </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                        <div class="form-group pb-1">
-                                            <div class="form-label-group in-border pb-1">
-                                                <input type="date" class="form-control shadow-none" placeholder="" required="">
+                                    <div class="col-lg-2 col-md-4 col-6">
+                                        <div class="form-group mb-0">
+                                            <div class="form-label-group in-border pb-2">
+                                                <input type="date" name="filter_to_date" class="form-control shadow-none" value="<?php if(!empty($to_date)) { echo $to_date; } ?>" onchange="Javascript:checkDateCheck();" placeholder="">
                                                 <label>To Date</label>
                                             </div>
-                                        </div> 
-                                    </div> 
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                        <div class="form-group">
-                                            <div class="form-label-group in-border">
-                                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                                    <option>Select CUstomer</option>
-                                                    <option>Customer 1</option>
-                                                    <option>Customer 2</option>
-                                                </select>
-                                                <label>Select Customer</label>
-                                            </div>
-                                        </div>        
+                                        </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                        <div class="form-group">
-                                            <div class="form-label-group in-border">
-                                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                                    <option>Select State</option>
-                                                    <option>State 1</option>
-                                                    <option>State 2</option>
+                                    <div class="col-lg-2 col-md-4 col-12">
+                                        <div class="form-group mb-0">
+                                            <div class="form-label-group in-border pb-2">
+                                                <select name="filter_customer_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                    <option value="">Select Customer</option>
+                                                    <?php
+                                                        if(!empty($customer_list)) {
+                                                            foreach($customer_list as $data) {
+                                                                if(!empty($data['customer_id']) && $data['customer_id'] != $GLOBALS['null_value']) {
+                                                                    ?>
+                                                                    <option value="<?php echo $data['customer_id']; ?>" <?php if($customer_count == '1') { ?>selected<?php } ?>>
+                                                                        <?php
+                                                                            if(!empty($data['name_mobile_city']) && $data['name_mobile_city'] != $GLOBALS['null_value']) {
+                                                                                echo $obj->encode_decode('decrypt', $data['name_mobile_city']);
+                                                                            }
+                                                                        ?>
+                                                                    </option>
+                                                                    <?php
+                                                                }
+                                                            }
+                                                        }
+                                                    ?>
                                                 </select>
-                                                <label>Select State</label>
+                                                <label>Customer</label>
                                             </div>
-                                        </div>        
+                                        </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
-                                        <div class="form-group">
-                                            <div class="form-label-group in-border">
-                                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                                    <option>Select District</option>
-                                                    <option>District 1</option>
-                                                    <option>District 2</option>
+                                    <div class="col-lg-2 col-md-4 col-12">
+                                        <div class="form-group mb-0">
+                                            <div class="form-label-group in-border pb-2">
+                                                <select name="filter_state_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                    <option value="">Select State</option>
                                                 </select>
-                                                <label>Select District</label>
+                                                <label>State</label>
                                             </div>
-                                        </div>        
+                                        </div>
                                     </div>
-                                    <div class="col-lg-2 col-md-3 col-6 px-lg-1">
+                                    <div class="col-lg-2 col-md-4 col-12">
+                                        <div class="form-group mb-0">
+                                            <div class="form-label-group in-border pb-2">
+                                                <select name="filter_district_id" class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
+                                                    <option value="">Select District</option>
+                                                </select>
+                                                <label>District</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-md-4 col-8">
                                         <div class="input-group">
-                                            <input type="text" class="form-control" style="height:34px;" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                                            <input type="text" class="form-control" name="search_text" id="search_text" style="height:34px;" placeholder="Search By Bill No." aria-label="Search" aria-describedby="basic-addon2">
                                             <span class="input-group-text" style="height:34px;" id="basic-addon2"><i class="bi bi-search"></i></span>
                                         </div>
                                     </div>
-                                    <div class="col-lg-4 col-md-6 col-12 text-end">
-                                        <button class="btn btn-dark" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-print"></i> Show Inactive bills </button>
-                                        <button class="btn btn-success" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-download"></i> Export </button>
-                                        <button class="btn btn-danger" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>   
-                                    </div>
-                                    <form name="table_listing_form" method="post">
-                                        <div class="col-sm-6 col-xl-8">
-                                            <input type="hidden" name="page_number" value="<?php if(!empty($page_number)) { echo $page_number; } ?>">
-                                            <input type="hidden" name="page_limit" value="<?php if(!empty($page_limit)) { echo $page_limit; } ?>">
-                                            <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
-                                        </div>	
-                                    </form>
+                                    <?php if(empty($add_access_error)) { ?>
+                                        <div class="col-lg-2 col-md-2 col-4 ms-auto">
+                                            <button class="btn btn-danger float-end" style="font-size:11px;" type="button" onclick="Javascript:ShowModalContent('<?php if(!empty($page_title)) { echo $page_title; } ?>', '');"> <i class="fa fa-plus-circle"></i> Add </button>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div>
-                            <div id="table_listing_records" class="table-responsive"></div>
+                            <div id="table_listing_records">
+                                <?php if(empty($view_access_error)) { ?>
+                                    <input type="hidden" name="page_title" value="<?php if(!empty($page_title)) { echo $page_title; } ?>">
+                                    <div class="new">
+                                        <ul class="new nav nav-pills my-3 justify-content-center" id="pills-tab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="pills-active-tab" data-bs-toggle="pill" data-bs-target="#pills-active" type="button" role="tab" aria-controls="pills-active" aria-selected="true">Active Bill</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="pills-invoiced-tab" data-bs-toggle="pill" data-bs-target="#pills-invoiced" type="button" role="tab" aria-controls="pills-invoiced" aria-selected="false">Invoiced Bill</button>
+                                            </li>
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="pills-cancel-tab" data-bs-toggle="pill" data-bs-target="#pills-cancel" type="button" role="tab" aria-controls="pills-cancel" aria-selected="false">Cancelled Bill</button>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="pills-tabContent">
+                                            <div class="tab-pane fade show active" id="pills-active" role="tabpanel" aria-labelledby="pills-active-tab" tabindex="0">
+                                                <?php 
+                                                    $cancelled = 0; $is_invoiced = 0;
+                                                    $id = "table-active";
+                                                    include("estimate_table.php"); 
+                                                ?>
+                                            </div>
+                                            <div class="tab-pane fade" id="pills-invoiced" role="tabpanel" aria-labelledby="pills-invoiced-tab" tabindex="0">
+                                                <?php 
+                                                    $cancelled = 0; $is_invoiced = 1;
+                                                    $id = "table-invoiced";
+                                                    include("estimate_table.php"); 
+                                                ?>
+                                            </div>
+                                            <div class="tab-pane fade" id="pills-cancel" role="tabpanel" aria-labelledby="pills-cancel-tab" tabindex="0">
+                                                <?php 
+                                                    $cancelled = 1; $is_invoiced = 0;
+                                                    $id = "table-cancel";
+                                                    include("estimate_table.php"); 
+                                                ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
                         </div>
                     </div>   
                 </div>
@@ -103,342 +159,126 @@
     </div>          
 <!--Right Content End-->
 <?php include "footer.php"; ?>
-<!-- Modal -->
-<div class="modal fade" id="queriesModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom pb-3">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Product Queries</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row justify-content-center">
-                    <div class="col-lg-12">
-                        <div class="h4">Queries</div>
-                    </div>
-                    <div class="col-lg-12 mt-3">
-                        <div class="table-responsive text-center">
-                            <table class="table nowrap cursor smallfnt w-100 table-bordered">
-                                <thead class="bg-dark smallfnt">
-                                    <tr style="white-space:pre;">
-                                        <th>#</th>
-                                        <th>Customer Name</th>
-                                        <th>Mobile Number</th>
-                                        <th>State</th>
-                                        <th>District</th>
-                                        <th>City</th>
-                                        <th>Estimate No</th>
-                                        <th>Pincode</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>01</td>
-                                        <td>Mahesh</td>
-                                        <td>9876786756</td>
-                                        <td>Tamilnadu</td>
-                                        <td>Virudhunagar</td>
-                                        <td>Sivakasi</td>
-                                        <td>EST 001</td>
-                                        <td>626130</td>
-                                    </tr>
-                                </tbody> 
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-center mt-3">
-                    <div class="col-lg-12">
-                        <div class="h4">Products</div>
-                    </div>
-                    <div class="col-lg-12 mt-3">
-                        <div class="table-responsive text-center">
-                            <table class="table nowrap cursor smallfnt w-100 table-bordered">
-                                <thead class="bg-dark smallfnt">
-                                    <tr style="white-space:pre;">
-                                        <th>#</th>
-                                        <th>Product Name</th>
-                                        <th>Attribute</th>
-                                        <th>Attribute Value</th>
-                                        <th>Qty</th>
-                                        <th>Amount</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>01</td>
-                                        <td>Product 01</td>
-                                        <td>Attribute 1</td>
-                                        <td>Attribute Value 01</td>
-                                        <td>50</td>
-                                        <td>20000</td>
-                                        <td>200000</td>
-                                    </tr>
-                                </tbody> 
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-center mt-3">
-                    <div class="col-lg-12">
-                        <div class="h4">Queries</div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-12 mt-3">
-                        <div class="heading5">Queries For Question ?</div>   
-                    </div>
-                    <div class="col-lg-6 col-md-12 col-12 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <textarea class="form-control" id="address" name="address" onkeydown="Javascript:KeyboardControls(this,'',150,'1')"; placeholder="Enter Your Address"></textarea>
-                                <label>Answer</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <input type="date" class="form-control shadow-none" placeholder="" required>
-                                <label>Waranty Start Date</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <div class="input-group">
-                                    <input type="text" id="opening_balance" name="opening_balance" value="" class="form-control shadow-none">
-                                    <label>Waranty Type</label>
-                                    <div class="input-group-append" style="width:40%!important;">
-                                        <select name="opening_balance_type" class="select2 select2-danger select2-hidden-accessible" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                            <option value="1" data-select2-id="14">Days</option>
-                                            <option value="2">Month</option>
-                                            <option value="2">Year</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <input type="date" class="form-control shadow-none" placeholder="" required>
-                                <label>Waranty End Date</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row justify-content-center mt-3">
-                    <div class="col-lg-12">
-                        <div class="h4">Assign Technician</div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                    <option>Select Installation Type</option>    
-                                    <option>Agent </option>
-                                    <option>Company Technician</option>
-                                    <option>Cancel</option>
-                                </select>
-                                <label>Installation Type</label>
-                            </div>
-                        </div> 
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <input type="date" class="form-control shadow-none" placeholder="" required>
-                                <label>Installation Date</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                    <option>Select Installation Person</option>    
-                                    <option>Person 1 </option>
-                                    <option>Person 2</option>
-                                </select>
-                                <label>Installation Person</label>
-                            </div>
-                        </div> 
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <select class="select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;">
-                                    <option>Select Payment Mode</option>    
-                                    <option>Online</option>
-                                    <option>Cash</option>
-                                </select>
-                                <label>Payment mode</label>
-                            </div>
-                        </div> 
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <textarea class="form-control" id="address" name="address" onkeydown="Javascript:KeyboardControls(this,'',150,'1')"; placeholder="Enter Your Address"></textarea>
-                                <label>Remarks</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-12 px-lg-1 mt-3">
-                        <div class="form-group">
-                            <div class="form-label-group in-border">
-                                <input type="text" class="form-control shadow-none" onkeydown="Javascript:KeyboardControls(this,'text',25,1);"  placeholder="" required="">
-                                <label>Agent Details</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 pt-3 text-center">
-                        <button class="btn btn-danger" type="button">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal End-->
-<!-- Modal -->
-<div class="modal fade" id="trackModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header border-bottom pb-3">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Product Queries</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="accordion" id="accordionExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                    <button class="accordion-button text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                        EST - 0001
-                    </button>
-                    </h2>
-                    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                           <div class="row">
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Estimate Date : 25-08-2025</div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Estimate Number : EST001</div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Amount : 25,000.00</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <div class="h6">Question : Question 1</div>
-                                </div>
-                                <div class="col-lg-12">
-                                    <div class="h6">Answer : Answer 01</div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Waranty Date : 25-08-2025</div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Waranty End Date : EST001</div>
-                                </div>
-                                <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                    <div class="h6">Status : Completed</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                    <button class="accordion-button collapsed text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        Installation - 0001
-                    </button>
-                    </h2>
-                    <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                    <div class="accordion-body">
-                       <div class="row">
-                            <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                <div class="h6">Installation Date : 25-08-2025</div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                <div class="h6">Technician Name : Raj Kumar</div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-12 pt-2">
-                                <div class="h6">Technician Number : 9876765456</div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 col-12 pt-2 text-end">
-                                <div class="h6">Status : Completed</div>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                    <button class="accordion-button collapsed text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                        Service - 0001
-                    </button>
-                    </h2>
-                    <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                        <div class="accordion-body">
-                            <div class="table-responsive">
-                                <table class="table nowrap cursor text-center smallfnt table-bordered">
-                                    <thead class="bg-light">
-                                        <tr>
-                                            <th>S.No</th>
-                                            <th>Ticket Created Date</th>
-                                            <th>Ticket Accepted Date</th>
-                                            <th>Technician Details</th>
-                                            <th>Technician Visited Date & Time</th>
-                                            <th>Technician Ticket Closed Date & Time</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>01</td>
-                                            <td>25-08-2025</td>
-                                            <td>25-08-2025</td>
-                                            <td>Mahesh - 9876545678</td>
-                                            <td>25-08-2025 13:34</td>
-                                            <td>25-08-2025 13:34</td>
-                                        </tr>
-                                    </tbody>
-                                </table>  
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-12 col-md-12 col-12 pt-2 text-end">
-                                    <div class="h6">Status : Completed</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 pt-3 text-center">
-                        <button class="btn btn-danger" type="button">
-                            Submit
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Modal End-->
 <script>
-    $(document).ready(function(){
-        $("#estimate").addClass("active");
-        table_listing_records_filter();
+    jQuery(document).ready(function(){
+        jQuery("#estimate").addClass("active");
+    });
+</script>
+<script>
+    function initializeDataTableIfNeeded(tableId) {
+        if (jQuery.fn.DataTable.isDataTable('#' + tableId)) {
+            jQuery('#' + tableId).DataTable().destroy();
+        }
+        if (!jQuery.fn.DataTable.isDataTable('#' + tableId)) {
+            jQuery('#' + tableId).DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ordering" : true,
+                "searching" : false,
+                "columnDefs": [
+                    { "orderable": false, "targets": [0,8] }
+                ],
+                "ajax": {
+                    "url": "estimate_changes.php",
+                    "type": "POST",
+                    "data": function(d) {
+                        if(jQuery('input[name="show_cancel_'+tableId+'"]').length > 0) {
+                            d.cancel = jQuery('input[name="show_cancel_'+tableId+'"]').val();
+                        }
+                        if(jQuery('input[name="show_invoiced_'+tableId+'"]').length > 0) {
+                            d.invoiced = jQuery('input[name="show_invoiced_'+tableId+'"]').val();
+                        }
+                        if(jQuery('#search_text').length > 0) {
+                            d.search_text = jQuery('#search_text').val();
+                        }
+                        if(jQuery('input[name="filter_from_date"]').length > 0) {
+                            d.filter_from_date = jQuery('input[name="filter_from_date"]').val();
+                        }
+                        if(jQuery('input[name="filter_to_date"]').length > 0) {
+                            d.filter_to_date = jQuery('input[name="filter_to_date"]').val();
+                        }
+                        if(jQuery('select[name="filter_customer_id"]').length > 0) {
+                            d.filter_customer_id = jQuery('select[name="filter_customer_id"]').val();
+                        }
+                        if(jQuery('select[name="filter_state_id"]').length > 0) {
+                            d.filter_state_id = jQuery('select[name="filter_state_id"]').val();
+                        }
+                        if(jQuery('select[name="filter_district_id"]').length > 0) {
+                            d.filter_district_id = jQuery('select[name="filter_district_id"]').val();
+                        }
+                    }
+                },
+                "columns": [
+                    { "data": "sno", "className": "text-center" },
+                    { "data": "estimate_date", "className": "text-center" },
+                    { "data": "estimate_number", "className": "text-center" },
+                    { "data": "customer_name", "className": "text-center" },
+                    { "data": "customer_mobile_number", "className": "text-center" },
+                    { "data": "customer_district", "className": "text-center" },
+                    { "data": "customer_state", "className": "text-center" },
+                    { "data": "bill_total", "className": "text-center" },
+                    { "data": "action", "className": "text-center" }
+                ]
+            });
+        }
+    }
+
+    // Initial load for active tab
+    jQuery(document).ready(function() {
+        if(jQuery('.tab-pane.active .datatable').length > 0) {
+            var initialTableId = jQuery('.tab-pane.active .datatable').attr('id');
+            initializeDataTableIfNeeded(initialTableId);
+        }
+        // On tab change
+        if(jQuery('button[data-bs-toggle="pill"]').length > 0) {
+            jQuery('button[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+                var targetPaneId = jQuery(e.target).attr('data-bs-target'); // e.g., "#pills-draft"
+                var tableId = jQuery(targetPaneId).find('.datatable').attr('id');
+                initializeDataTableIfNeeded(tableId);
+            });
+        }
+
+        if(jQuery('#search_text').length > 0) {
+            jQuery('#search_text').on('keyup', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
+        if(jQuery('input[name="filter_from_date"]').length > 0) {
+            jQuery('input[name="filter_from_date"]').on('change', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
+        if(jQuery('input[name="filter_to_date"]').length > 0) {
+            jQuery('input[name="filter_to_date"]').on('change', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
+        if(jQuery('select[name="filter_customer_id"]').length > 0) {
+            jQuery('select[name="filter_customer_id"]').on('change', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
+        if(jQuery('select[name="filter_state_id"]').length > 0) {
+            jQuery('select[name="filter_state_id"]').on('change', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
+        if(jQuery('select[name="filter_district_id"]').length > 0) {
+            jQuery('select[name="filter_district_id"]').on('change', function() {
+                if(jQuery('.tab-pane.active .datatable').length > 0) {
+                    jQuery('.tab-pane.active .datatable').DataTable().ajax.reload();
+                }
+            });
+        }
     });
 </script>

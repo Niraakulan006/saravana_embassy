@@ -19,10 +19,18 @@
 	$GLOBALS['image_format'] = ".webp";
 	$GLOBALS['max_description_length'] = 150; 
     $GLOBALS['max_user_count'] = 5;
+	$GLOBALS['admin_folder_name'] = 'admin_saravana_embassy_28082025';
 
 	$GLOBALS['Reset_to_one'] = "Reset To 1"; $GLOBALS['continue_last_number'] = "Continue from last number"; $GLOBALS['custom_number'] = "Custom Number";
 	
 	$GLOBALS['admin_user_type'] = "Super Admin"; $GLOBALS['staff_user_type'] = "Staff";
+
+	$GLOBALS['product_sort_position'] = 'Recently added ( latest )';
+	$GLOBALS['product_sort_date_new_to_old'] = 'Date New To Old'; $GLOBALS['product_sort_date_old_to_new'] = 'Date Old To New';
+	$GLOBALS['product_sort_price_low_to_high'] = 'Price Low To High'; $GLOBALS['product_sort_price_high_to_low'] = 'Price High To Low';
+
+	$GLOBALS['product_sort_by_options'] = array($GLOBALS['product_sort_position'], $GLOBALS['product_sort_date_new_to_old'], $GLOBALS['product_sort_date_old_to_new'], $GLOBALS['product_sort_price_low_to_high'], $GLOBALS['product_sort_price_high_to_low']);
+
 
 	if(!empty($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id']) && isset($_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'])) {
 		$GLOBALS['creator'] = $_SESSION[$GLOBALS['site_name_user_prefix'].'_user_id'];
@@ -55,6 +63,10 @@
 	$GLOBALS['home_banner_table'] = $table_prefix.'home_banner';
 	$GLOBALS['meta_tags_table'] = $table_prefix.'meta_tags';	
 	$GLOBALS['role_permission_table'] = $table_prefix."role_permission";
+	$GLOBALS['product_query_table'] = $table_prefix."product_query";
+	$GLOBALS['mail_template_table'] = $table_prefix.'mail';
+	$GLOBALS['otp_send_phone_numbers_table'] = $table_prefix.'otp_send_phone_numbers';
+	$GLOBALS['estimate_table'] = $table_prefix."estimate";
 
 	$GLOBALS['company_module'] = 'Company';	
 	$GLOBALS['category_module'] = 'Category';	
@@ -65,6 +77,7 @@
 	$GLOBALS['attribute_module'] = 'Attribute';
 	$GLOBALS['attribute_value_module'] = 'Attribute value';
 	$GLOBALS['customer_module'] = 'Customer';	
+	$GLOBALS['estimate_module'] = 'Estimate';
 
 	$user_access_pages_list = array();
 	$user_access_pages_list[] = $GLOBALS['company_module'];
@@ -76,5 +89,5 @@
 	$user_access_pages_list[] = $GLOBALS['attribute_module'];
 	$user_access_pages_list[] = $GLOBALS['attribute_value_module'];
 	$user_access_pages_list[] = $GLOBALS['customer_module'];	
-
+	$user_access_pages_list[] = $GLOBALS['estimate_module'];
 ?>
